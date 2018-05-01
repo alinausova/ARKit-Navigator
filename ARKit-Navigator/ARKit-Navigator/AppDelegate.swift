@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  ARKit Navigator
+//  ARKit-Navigator
 //
 //  Created by Alina Usova on 01/05/2018.
 //  Copyright © 2018 alinausova. All rights reserved.
