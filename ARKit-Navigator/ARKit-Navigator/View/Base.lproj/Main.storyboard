@@ -13,7 +13,7 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="ARKit_Navigator" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ARViewController" customModule="ARKit_Navigator" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -21,30 +21,69 @@
                             <arscnView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G4u-Zt-etW">
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                             </arscnView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vrd-PE-eTM">
-                                <rect key="frame" x="313" y="36" width="46" height="46"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vrd-PE-eTM" userLabel="Info">
+                                <rect key="frame" x="251" y="36" width="46" height="46"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="46" id="LD6-qV-0aO"/>
                                     <constraint firstAttribute="width" constant="46" id="rsS-zp-2HO"/>
                                 </constraints>
-                                <state key="normal" title="Map"/>
+                                <state key="normal" image="Info"/>
                                 <connections>
                                     <action selector="describeMap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xvS-6K-kv7"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xXp-8y-UlZ" userLabel="Map">
+                                <rect key="frame" x="313" y="36" width="46" height="46"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="46" id="1ld-TV-6sl"/>
+                                    <constraint firstAttribute="height" constant="46" id="h6n-YZ-tM2"/>
+                                </constraints>
+                                <state key="normal" image="Compas"/>
+                                <connections>
+                                    <segue destination="RZa-vH-1dh" kind="presentation" modalPresentationStyle="overCurrentContext" id="Vgz-iz-ERn"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btG-uh-zBD" userLabel="Floor">
+                                <rect key="frame" x="313" y="98" width="46" height="46"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="46" id="tY6-VY-KUG"/>
+                                    <constraint firstAttribute="height" constant="46" id="tzB-Xc-rmd"/>
+                                </constraints>
+                                <state key="normal" image="Radar"/>
+                                <connections>
+                                    <action selector="showFloor:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eIT-8x-0QE"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OrG-qM-JvR">
+                                <rect key="frame" x="16" y="36" width="219" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="Mjm-oT-7td"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="vrd-PE-eTM" secondAttribute="trailing" constant="16" id="27V-1A-901"/>
-                            <constraint firstItem="G4u-Zt-etW" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="99X-1u-I29"/>
-                            <constraint firstItem="vrd-PE-eTM" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="QLq-oB-kbm"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="G4u-Zt-etW" secondAttribute="bottom" id="een-fQ-wJm"/>
-                            <constraint firstItem="G4u-Zt-etW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="gFa-hT-bDY"/>
-                            <constraint firstItem="G4u-Zt-etW" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="jDF-Uz-obW"/>
+                            <constraint firstItem="vrd-PE-eTM" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="2s1-yD-gon"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="btG-uh-zBD" secondAttribute="trailing" constant="16" id="AlW-zk-HY0"/>
+                            <constraint firstItem="vrd-PE-eTM" firstAttribute="leading" secondItem="OrG-qM-JvR" secondAttribute="trailing" constant="16" id="G3S-64-clr"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="xXp-8y-UlZ" secondAttribute="trailing" constant="16" id="Hzh-2T-NET"/>
+                            <constraint firstItem="G4u-Zt-etW" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="Sm1-TE-9rn"/>
+                            <constraint firstItem="G4u-Zt-etW" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Tld-Vl-WX3"/>
+                            <constraint firstItem="xXp-8y-UlZ" firstAttribute="leading" secondItem="vrd-PE-eTM" secondAttribute="trailing" constant="16" id="VNX-ab-QDO"/>
+                            <constraint firstItem="G4u-Zt-etW" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="W3h-8c-RRw"/>
+                            <constraint firstItem="xXp-8y-UlZ" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="Zkj-e7-BO4"/>
+                            <constraint firstItem="G4u-Zt-etW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="mca-rP-6t1"/>
+                            <constraint firstItem="OrG-qM-JvR" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="rpq-pg-UCB"/>
+                            <constraint firstItem="OrG-qM-JvR" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="yqA-Xf-3WS"/>
+                            <constraint firstItem="btG-uh-zBD" firstAttribute="top" secondItem="xXp-8y-UlZ" secondAttribute="bottom" constant="16" id="zEu-kc-UW3"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="sceneLabel" destination="OrG-qM-JvR" id="onS-Ei-GUx"/>
                         <outlet property="sceneView" destination="G4u-Zt-etW" id="sDV-Xc-MsY"/>
                     </connections>
                 </viewController>
@@ -52,5 +91,53 @@
             </objects>
             <point key="canvasLocation" x="32.799999999999997" y="31.934032983508249"/>
         </scene>
+        <!--Map View Controller-->
+        <scene sceneID="RYd-hl-obH">
+            <objects>
+                <viewController id="RZa-vH-1dh" customClass="MapViewController" customModule="ARKit_Navigator" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" alpha="0.69999999999999996" contentMode="scaleToFill" id="bD4-pd-fO0">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kRC-U7-bEj">
+                                <rect key="frame" x="16" y="36" width="46" height="46"/>
+                                <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="46" id="6Rb-j5-Yw7"/>
+                                    <constraint firstAttribute="height" constant="46" id="OsK-1p-cwt"/>
+                                </constraints>
+                                <state key="normal" title="Back"/>
+                                <connections>
+                                    <action selector="goBack:" destination="RZa-vH-1dh" eventType="touchUpInside" id="PWH-Ka-dzb"/>
+                                </connections>
+                            </button>
+                            <skView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0xl-C4-a1N">
+                                <rect key="frame" x="24" y="106" width="327" height="537"/>
+                            </skView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="0xl-C4-a1N" firstAttribute="top" secondItem="kRC-U7-bEj" secondAttribute="bottom" constant="24" id="Bg5-NS-cb6"/>
+                            <constraint firstItem="50g-4Q-Q2h" firstAttribute="trailing" secondItem="0xl-C4-a1N" secondAttribute="trailing" constant="24" id="FPd-mJ-3IM"/>
+                            <constraint firstItem="kRC-U7-bEj" firstAttribute="top" secondItem="50g-4Q-Q2h" secondAttribute="top" constant="16" id="Rig-DE-UOO"/>
+                            <constraint firstItem="kRC-U7-bEj" firstAttribute="leading" secondItem="50g-4Q-Q2h" secondAttribute="leading" constant="16" id="YK3-z3-k1w"/>
+                            <constraint firstItem="50g-4Q-Q2h" firstAttribute="bottom" secondItem="0xl-C4-a1N" secondAttribute="bottom" constant="24" id="lw0-zp-mJB"/>
+                            <constraint firstItem="0xl-C4-a1N" firstAttribute="leading" secondItem="50g-4Q-Q2h" secondAttribute="leading" constant="24" id="p0C-za-L0E"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="50g-4Q-Q2h"/>
+                    </view>
+                    <connections>
+                        <outlet property="mapSKView" destination="0xl-C4-a1N" id="xhW-2y-TG3"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WKc-0d-edS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="881" y="-235"/>
+        </scene>
     </scenes>
+    <resources>
+        <image name="Compas" width="32" height="32"/>
+        <image name="Info" width="32" height="32"/>
+        <image name="Radar" width="32" height="32"/>
+    </resources>
 </document>

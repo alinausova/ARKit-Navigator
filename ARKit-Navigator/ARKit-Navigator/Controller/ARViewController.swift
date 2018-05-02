@@ -9,13 +9,16 @@
 import UIKit
 import ARKit
 
-class ViewController: UIViewController, ARSCNViewDelegate {
+class ARViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet weak var sceneView: ARSCNView!
-
+    @IBOutlet weak var sceneLabel: UILabel!
+   
+    
     let configuration = ARWorldTrackingConfiguration()
     var mapElements : [ARAnchor] = []
-    var labelText = "Map elements"
+    var floorLevel : Float = 100.0
+    let map = Map()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +38,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.delegate = self
         self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, ARSCNDebugOptions.showWorldOrigin]
         configuration.planeDetection = [.horizontal, .vertical]
+        //configuration.isAutoFocusEnabled = true
         self.sceneView.session.run(configuration)
     }
 
@@ -61,8 +65,41 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
         // Add the plane visualization to the ARKit-managed node so that it tracks
         // changes in the plane anchor as plane estimation continues.
-        mapElements.append(planeAnchor)
+        //mapElements.append(planeAnchor)
+
+
+        add(x: planeAnchor.transform.columns.3.x,
+            y: planeAnchor.transform.columns.3.y,
+            z: planeAnchor.transform.columns.3.z,
+            color: .green)
+//        for ver in planeAnchor.geometry.vertices {
+//            add(x: planeAnchor.transform.columns.3.x + ver.x,
+//                y: planeAnchor.transform.columns.3.y + ver.y,
+//                z: planeAnchor.transform.columns.3.z + ver.z,
+//            color: .green)
+//        }
+//        for ver in planeAnchor.geometry.boundaryVertices {
+//            add(x: planeAnchor.transform.columns.3.x + ver.x,
+//                y: planeAnchor.transform.columns.3.y + ver.y,
+//                z: planeAnchor.transform.columns.3.z + ver.z,
+//                color: .blue)
+//        }
+//        for ver in planeAnchor.geometry.textureCoordinates {
+//            add(x: planeAnchor.transform.columns.3.x + ver.x,
+//                y: planeAnchor.transform.columns.3.y,
+//                z: planeAnchor.transform.columns.3.z + ver.y,
+//                color: .red)
+//        }
+
         node.addChildNode(planeNode)
+
+        map.addElement(newElement: planeAnchor)
+
+        if planeAnchor.center.z < self.floorLevel {
+            floorLevel = planeAnchor.center.z
+            updateStateLabel()
+        }
+
     }
 
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
@@ -79,6 +116,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         plane.width = CGFloat(planeAnchor.extent.x)
         plane.height = CGFloat(planeAnchor.extent.z)
         //mapElements.append(planeAnchor)
+         if planeAnchor.center.z < self.floorLevel {
+            floorLevel = planeAnchor.center.z
+            updateStateLabel()
+        }
+        map.addElement(newElement: planeAnchor)
     }
 
     func renderer(_ renderer: SCNSceneRenderer, didRemove node: SCNNode, for anchor: ARAnchor) {
@@ -86,10 +128,37 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         print("Plane Anchor was removed!", anchorPlane.extent)
     }
 
+    func updateStateLabel() {
+        DispatchQueue.main.async{
+            self.sceneLabel.text = "Floor level: \(self.floorLevel)"
+        }
+    }
+
+    func add(x: Float, y: Float, z: Float, color: UIColor) {
+        let node = SCNNode()
+        node.geometry = SCNBox(width: 0.01, height: 0.01, length: 0.01, chamferRadius: 0.01)
+        node.geometry?.firstMaterial?.diffuse.contents = color
+        node.position = SCNVector3(x,y,z)
+        self.sceneView.scene.rootNode.addChildNode(node)
+    }
+
+    func refreshFloor() {
+        let floor = map.getFloor()
+        for floorEl in floor {
+            if floorEl.confidence>5 {
+                add(x: floorEl.x, y: floorEl.y, z: floorEl.z, color: .blue)
+            }
+        }
+    }
+
+    @IBAction func showFloor(_ sender: Any) {
+        refreshFloor()
+    }
+
     @IBAction func describeMap(_ sender: Any) {
         for element in mapElements {
             guard let planeAnchor = element as? ARPlaneAnchor else { return }
-            print("\n Center: \(planeAnchor.center),Extent \(planeAnchor.extent), \(planeAnchor.alignment), \(planeAnchor.description)")
+            print("\n Center: \(planeAnchor.center),  Extent \(planeAnchor.extent),\n \(planeAnchor.alignment), \n Description \(planeAnchor.description),\n Transform \(planeAnchor.transform)")
         }
     }
 }
