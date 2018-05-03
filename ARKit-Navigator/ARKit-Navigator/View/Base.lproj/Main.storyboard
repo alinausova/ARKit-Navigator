@@ -51,7 +51,7 @@
                                 </constraints>
                                 <state key="normal" image="Radar"/>
                                 <connections>
-                                    <action selector="showFloor:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eIT-8x-0QE"/>
+                                    <action selector="showMap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eIT-8x-0QE"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OrG-qM-JvR">
