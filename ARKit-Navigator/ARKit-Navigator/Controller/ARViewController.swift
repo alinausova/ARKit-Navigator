@@ -9,7 +9,7 @@
 import UIKit
 import ARKit
 
-class ARViewController: UIViewController, ARSCNViewDelegate {
+class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate {
 
     @IBOutlet weak var sceneView: ARSCNView!
     @IBOutlet weak var sceneLabel: UILabel!
@@ -49,6 +49,16 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nav = segue.destination as? MapViewController {
+           // print(segue.destination.title)
+            //if let classBVC = nav.topViewController as? MapViewController {
+               nav.delegate = self
+           // }
+        }
+    }
+
 
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         // Place content only for anchors found by plane detection.
@@ -106,7 +116,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
 
     func updateStateLabel() {
         DispatchQueue.main.async{
-            self.sceneLabel.text = "Floor level: \(self.floorLevel)"
+            self.sceneLabel.text = " Floor level: \(self.floorLevel)"
         }
     }
 
@@ -169,5 +179,22 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
             print("\n Center: \(planeAnchor.center),  Extent \(planeAnchor.extent),\n \(planeAnchor.alignment), \n Description \(planeAnchor.description),\n Transform \(planeAnchor.transform)")
         }
     }
+
+    func getFloorPoints() -> [MapElement2d] {
+        return map.getFloor()
+    }
+
+    func getWallPoints() -> [MapElement2d] {
+        return map.getWall()
+    }
+
+    func getObjectPoints() -> [MapElement2d] {
+        return map.getObjects()
+    }
+
+    func getGridSize() -> Float {
+        return map.gridSize
+    }
+
 }
 
