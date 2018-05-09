@@ -51,6 +51,10 @@ class Map2D {
         }
     }
 
+    func addElement(newElement: ARAnchor) {
+        addObjectToGrid(newElement: newElement)
+    }
+
     func addFloorToGrid(newElement: ARPlaneAnchor) {
         var newFloorPoints : [MapElement2d] = []
         for boundaryPoint in newElement.geometry.boundaryVertices {
@@ -117,6 +121,13 @@ class Map2D {
         addMapElement2dToGrid(newMapElement: centerMapElement2d)
     }
 
+    func addObjectToGrid(newElement: ARAnchor) {
+        let newMapElement = MapElement2d(x: round((newElement.transform.columns.3.x) / gridSize) * gridSize,
+                                         z: round((newElement.transform.columns.3.z) / gridSize) * gridSize)
+        newMapElement.content = .object
+        addMapElement2dToGrid(newMapElement: newMapElement)
+    }
+
     func createKey (MapElement2d: MapElement2d) -> String {
         return "\(MapElement2d.x):\(MapElement2d.z)"
     }
@@ -141,13 +152,18 @@ class Map2D {
 
     func addMapElement2dToGrid(newMapElement: MapElement2d) {
         let newKey = createKey(MapElement2d: newMapElement)
-        if let oldValue = mapGrid[newKey] {
+        if let oldValue = mapGrid[newKey], oldValue.content != .object, newMapElement.content != .object {
             if newMapElement.content == .wall && oldValue.content == .floor {
                 oldValue.content = .floor
             }
             oldValue.confidence += 1
         } else {
-            newMapElement.confidence = 1
+            if newMapElement.content == .object {
+                newMapElement.confidence = 1000
+            } else {
+                newMapElement.confidence = 1
+
+            }
             mapGrid[newKey] = newMapElement
         }
     }

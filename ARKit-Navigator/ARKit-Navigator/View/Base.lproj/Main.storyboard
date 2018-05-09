@@ -64,6 +64,15 @@
                                     <action selector="showMap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eIT-8x-0QE"/>
                                 </connections>
                             </button>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wfL-Af-pq3">
+                                <rect key="frame" x="16" y="587" width="343" height="64"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="64" id="zS6-gz-dd2"/>
+                                </constraints>
+                                <connections>
+                                    <segue destination="7wV-HK-Elr" kind="embed" id="43f-Al-EYA"/>
+                                </connections>
+                            </containerView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -71,12 +80,15 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="btG-uh-zBD" secondAttribute="trailing" constant="16" id="AlW-zk-HY0"/>
                             <constraint firstItem="vrd-PE-eTM" firstAttribute="leading" secondItem="OrG-qM-JvR" secondAttribute="trailing" constant="78" id="G3S-64-clr"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="xXp-8y-UlZ" secondAttribute="trailing" constant="16" id="Hzh-2T-NET"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="wfL-Af-pq3" secondAttribute="trailing" constant="16" id="ILL-mQ-D94"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="vrd-PE-eTM" secondAttribute="trailing" constant="16" id="PnI-wo-4ls"/>
                             <constraint firstItem="G4u-Zt-etW" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="Sm1-TE-9rn"/>
                             <constraint firstItem="G4u-Zt-etW" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Tld-Vl-WX3"/>
                             <constraint firstItem="G4u-Zt-etW" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="W3h-8c-RRw"/>
+                            <constraint firstAttribute="bottom" secondItem="wfL-Af-pq3" secondAttribute="bottom" constant="16" id="aLx-tU-0Tz"/>
                             <constraint firstItem="xXp-8y-UlZ" firstAttribute="top" secondItem="vrd-PE-eTM" secondAttribute="bottom" constant="16" id="kni-2M-jAW"/>
                             <constraint firstItem="G4u-Zt-etW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="mca-rP-6t1"/>
+                            <constraint firstItem="wfL-Af-pq3" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="pbL-tt-b4t"/>
                             <constraint firstItem="OrG-qM-JvR" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="rpq-pg-UCB"/>
                             <constraint firstItem="OrG-qM-JvR" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="yqA-Xf-3WS"/>
                             <constraint firstItem="btG-uh-zBD" firstAttribute="top" secondItem="xXp-8y-UlZ" secondAttribute="bottom" constant="16" id="zEu-kc-UW3"/>
@@ -134,6 +146,56 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WKc-0d-edS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="881" y="-235"/>
+        </scene>
+        <!--Status View Controller-->
+        <scene sceneID="Pn0-IZ-PMu">
+            <objects>
+                <viewController id="7wV-HK-Elr" customClass="StatusViewController" customModule="ARKit_Navigator" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="n58-Q5-ijb">
+                        <rect key="frame" x="0.0" y="0.0" width="343" height="64"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fi8-Kn-Rn8">
+                                <rect key="frame" x="0.0" y="0.0" width="343" height="64"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.5" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="chO-XU-utb">
+                                    <rect key="frame" x="0.0" y="0.0" width="343" height="64"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yNB-3j-vgJ" userLabel="Tracking Status">
+                                            <rect key="frame" x="16" y="8" width="311" height="48"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="yNB-3j-vgJ" firstAttribute="top" secondItem="chO-XU-utb" secondAttribute="top" constant="8" id="JE1-WE-HKs"/>
+                                        <constraint firstAttribute="bottom" secondItem="yNB-3j-vgJ" secondAttribute="bottom" constant="8" id="cJq-Wb-RgS"/>
+                                        <constraint firstAttribute="trailing" secondItem="yNB-3j-vgJ" secondAttribute="trailing" constant="16" id="lC2-cC-0cs"/>
+                                        <constraint firstItem="yNB-3j-vgJ" firstAttribute="leading" secondItem="chO-XU-utb" secondAttribute="leading" constant="16" id="s4s-LU-jl4"/>
+                                    </constraints>
+                                </view>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <blurEffect style="light"/>
+                            </visualEffectView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="fi8-Kn-Rn8" secondAttribute="bottom" id="JaM-DJ-LvL"/>
+                            <constraint firstItem="fi8-Kn-Rn8" firstAttribute="leading" secondItem="n58-Q5-ijb" secondAttribute="leading" id="lmi-6d-maP"/>
+                            <constraint firstItem="fi8-Kn-Rn8" firstAttribute="top" secondItem="n58-Q5-ijb" secondAttribute="top" id="ut7-vh-z7l"/>
+                            <constraint firstAttribute="trailing" secondItem="fi8-Kn-Rn8" secondAttribute="trailing" id="wtB-ip-1H8"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="messageLabel" destination="yNB-3j-vgJ" id="kWT-eW-8IT"/>
+                        <outlet property="messagePanel" destination="fi8-Kn-Rn8" id="A6I-fh-4eq"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="faz-DA-mOM" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="33" y="501"/>
         </scene>
     </scenes>
     <resources>
