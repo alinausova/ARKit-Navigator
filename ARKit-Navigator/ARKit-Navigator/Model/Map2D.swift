@@ -37,6 +37,15 @@ class Map2D {
     init() {
         floorElements = []
         wallElements = []
+        let coorCenter = MapElement2d(x: 0, z: 0, content: .center, confidence: 2000)
+        addMapElement2dToGrid(newMapElement: coorCenter)
+        let coorCenterX = MapElement2d(x: gridSize, z: 0, content: .center, confidence: 2000)
+        let coorCenterZ = MapElement2d(x: 0, z: gridSize, content: .center, confidence: 2000)
+        let coorCenterZ2 = MapElement2d(x: 0, z: gridSize + gridSize, content: .center, confidence: 2000)
+        addMapElement2dToGrid(newMapElement: coorCenterX)
+        addMapElement2dToGrid(newMapElement: coorCenterZ)
+        addMapElement2dToGrid(newMapElement: coorCenterZ2)
+
     }
 
     func addElement(newElement: ARPlaneAnchor) {
@@ -54,6 +63,8 @@ class Map2D {
     func addElement(newElement: ARAnchor) {
         addObjectToGrid(newElement: newElement)
     }
+
+
 
     func addFloorToGrid(newElement: ARPlaneAnchor) {
         var newFloorPoints : [MapElement2d] = []
@@ -103,28 +114,30 @@ class Map2D {
         var newWallPoints : [MapElement2d] = []
         for boundaryPoint in newElement.geometry.boundaryVertices {
             let newMapElement = MapElement2d(x: round((boundaryPoint.x + newElement.transform.columns.3.x) / gridSize) * gridSize,
-                                           z: round((boundaryPoint.z + newElement.transform.columns.3.z) / gridSize) * gridSize)
-            newMapElement.changeContent(content: .wall)
+                                           z: round((boundaryPoint.z + newElement.transform.columns.3.z) / gridSize) * gridSize,
+                                           content: .wall,
+                                           confidence: 50)
             addMapElement2dToGrid(newMapElement: newMapElement)
             newWallPoints.append(newMapElement)
         }
-        for verticle in newElement.geometry.vertices {
-            let newMapElement = MapElement2d(x: round((verticle.x + newElement.transform.columns.3.x) / gridSize) * gridSize,
-                                           z: round((verticle.z + newElement.transform.columns.3.z) / gridSize) * gridSize)
-            newMapElement.changeContent(content: .wall)
-            addMapElement2dToGrid(newMapElement: newMapElement)
-            newWallPoints.append(newMapElement)
-        }
-        let centerMapElement2d = MapElement2d (x: round((newElement.transform.columns.3.x) / gridSize) * gridSize,
-                                           z: round((newElement.transform.columns.3.z) / gridSize) * gridSize)
-        centerMapElement2d.content = .wall
-        addMapElement2dToGrid(newMapElement: centerMapElement2d)
+//        for verticle in newElement.geometry.vertices {
+//            let newMapElement = MapElement2d(x: round((verticle.x + newElement.transform.columns.3.x) / gridSize) * gridSize,
+//                                           z: round((verticle.z + newElement.transform.columns.3.y) / gridSize) * gridSize,
+//                                           content: .wall)
+//            addMapElement2dToGrid(newMapElement: newMapElement)
+//            newWallPoints.append(newMapElement)
+//        }
+//        let centerMapElement2d = MapElement2d (x: round((newElement.transform.columns.3.x) / gridSize) * gridSize,
+//                                           z: round((newElement.transform.columns.3.y) / gridSize) * gridSize,
+//                                           content: .wall)
+//        addMapElement2dToGrid(newMapElement: centerMapElement2d)
     }
 
     func addObjectToGrid(newElement: ARAnchor) {
         let newMapElement = MapElement2d(x: round((newElement.transform.columns.3.x) / gridSize) * gridSize,
-                                         z: round((newElement.transform.columns.3.z) / gridSize) * gridSize)
-        newMapElement.content = .object
+                                         z: round((newElement.transform.columns.3.z) / gridSize) * gridSize,
+                                         content: .object,
+                                         confidence: 1000)
         addMapElement2dToGrid(newMapElement: newMapElement)
     }
 
@@ -152,20 +165,38 @@ class Map2D {
 
     func addMapElement2dToGrid(newMapElement: MapElement2d) {
         let newKey = createKey(MapElement2d: newMapElement)
-        if let oldValue = mapGrid[newKey], oldValue.content != .object, newMapElement.content != .object {
-            if newMapElement.content == .wall && oldValue.content == .floor {
-                oldValue.content = .floor
+        if let old = mapGrid[newKey]{
+            if old.content == newMapElement.content {
+                old.confidence += 1
+            } else if old.confidence < newMapElement.confidence {
+                old.changeContent(content: newMapElement.content)
+                old.confidence = newMapElement.confidence
             }
-            oldValue.confidence += 1
         } else {
-            if newMapElement.content == .object {
-                newMapElement.confidence = 1000
-            } else {
-                newMapElement.confidence = 1
-
-            }
             mapGrid[newKey] = newMapElement
         }
+//        if let oldValue = mapGrid[newKey], oldValue.content != .object, newMapElement.content != .object {
+//            if newMapElement.content == .wall && oldValue.content == .floor {
+//                oldValue.content = .floor
+//            }
+//            oldValue.confidence += 1
+//        } else {
+//            if newMapElement.content == .object {
+//                newMapElement.confidence = 1000
+//            } else {
+//                newMapElement.confidence = 1
+//
+//            }
+//            mapGrid[newKey] = newMapElement
+//        }
+    }
+
+    func getMap() -> [MapElement2d] {
+        var result : [MapElement2d] = []
+        for mapEl in mapGrid.values {
+                result.append(mapEl)
+        }
+        return result
     }
 
     func getFloor() -> [MapElement2d] {
@@ -251,9 +282,33 @@ class MapElement2d {
         self.z = z
     }
 
+    init(x: Float, z: Float, content: MapContent) {
+        self.x = x
+        self.z = z
+        self.content = content
+    }
+
+    init(x: Float, z: Float, content: MapContent, confidence: Double) {
+        self.x = x
+        self.z = z
+        self.content = content
+        self.confidence = confidence
+    }
 
     func changeContent(content type: MapContent) {
         self.content = type
+    }
+
+    func getElementColor() -> UIColor {
+        let color : UIColor
+        switch self.content {
+        case .object: color = .cyan
+        case .floor: color = .blue
+        case .wall: color = .red
+        case .center: color = .purple
+        default: color = .white
+        }
+        return color
     }
 }
 

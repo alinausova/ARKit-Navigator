@@ -12,9 +12,14 @@ import ARKit
 import SpriteKit
 
 protocol  MapViewDelegate {
-    func getFloorPoints() -> [MapElement2d]
-    func getWallPoints() -> [MapElement2d]
-    func getObjectPoints() -> [MapElement2d]
+//    func getFloorPoints() -> [MapElement2d]
+//    func getWallPoints() -> [MapElement2d]
+//    func getObjectPoints() -> [MapElement2d]
+//    func getMapElements() -> [MapElement2d]
+    func getFloorPoints() -> [MapElement]
+    func getWallPoints() -> [MapElement]
+    func getObjectPoints() -> [MapElement]
+    func getMapElements() -> [MapElement]
     func getGridSize() -> Float
 }
 
@@ -34,26 +39,14 @@ class MapViewController: UIViewController {
         backNode.fillColor = .lightGray
         backNode.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
 
-        if let floor = delegate?.getFloorPoints(),
+        if let mapElements = delegate?.getMapElements(),
             let gridSize = delegate?.getGridSize() {
             let scaledGridSize = gridSize * 100
-            for point in floor {
+            for element in mapElements {
                 let newNode = SKShapeNode(rectOf: CGSize(width: CGFloat(scaledGridSize), height: CGFloat(scaledGridSize)))
-                newNode.position = CGPoint(x: Double(point.x) * 100 , y: Double(point.z) * 100)
+                newNode.position = CGPoint(x: -Double(element.x) * 100 , y: Double(element.z) * 100)
                 //newNode.position = CGPoint (x: 0, y: 0)
-                newNode.fillColor = .blue
-                backNode.addChild(newNode)
-            }
-        }
-
-        if let wall = delegate?.getWallPoints(),
-            let gridSize = delegate?.getGridSize() {
-            let scaledGridSize = gridSize * 100
-            for point in wall {
-                let newNode = SKShapeNode(rectOf: CGSize(width: CGFloat(scaledGridSize), height: CGFloat(scaledGridSize)))
-                newNode.position = CGPoint(x: Double(point.x) * 100 , y: Double(point.z) * 100)
-                //newNode.position = CGPoint (x: 0, y: 0)
-                newNode.fillColor = .red
+                newNode.fillColor = element.getElementColor()
                 backNode.addChild(newNode)
             }
         }
@@ -63,7 +56,7 @@ class MapViewController: UIViewController {
 //        frontNode.position = CGPoint(x: 0, y: 0)
 //        backNode.addChild(frontNode)
 
-            scene.addChild(backNode)
+        scene.addChild(backNode)
 
         mapSKView.presentScene(scene)
 
