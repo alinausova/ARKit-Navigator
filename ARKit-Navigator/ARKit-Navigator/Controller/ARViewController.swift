@@ -25,6 +25,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, AR
     var mapElements : [ARAnchor] = []
     var floorLevel : Float = 100.0
     var appleIsNotFound = true
+    var currentPositionOfCamera = SCNVector3(x: 0, y: 0, z: 0)
 
     //var map = Map2D()
     var map = Map()
@@ -194,6 +195,20 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, AR
         print("Plane Anchor was removed!", anchorPlane.extent)
     }
 
+    func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
+        guard let pointOfView = sceneView.pointOfView else { return }
+        let transform = pointOfView.transform
+        let orientation = SCNVector3(-transform.m31, -transform.m32, transform.m33)
+        let location = SCNVector3(transform.m41, transform.m42, transform.m43)
+        self.currentPositionOfCamera = sumSCNVectors(lhv: orientation, rhv: location)
+        self.currentLocation = location
+        print("\(currentLocation)")
+    }
+
+    func sumSCNVectors(lhv:SCNVector3, rhv:SCNVector3) -> SCNVector3 {
+        return SCNVector3(lhv.x + rhv.x, lhv.y + rhv.y, lhv.z + rhv.z)
+    }
+
     // MARK: - ARSessionDelegate
 
     // Pass camera frames received from ARKit to Vision (when not already processing one)
@@ -236,6 +251,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, AR
 
     // The pixel buffer being held for analysis; used to serialize Vision requests.
     private var currentBuffer: CVPixelBuffer?
+    private var currentOrientation: vector_float3?
+    private var currentLocation: SCNVector3?
 
     // Queue for dispatching vision classification requests
     private let visionQueue = DispatchQueue(label: "com.example.apple-samplecode.ARKitVision.serialVisionQueue")
@@ -323,6 +340,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, AR
             // Unhide content after successful relocalization.
             setOverlaysHidden(false)
         }
+        self.currentOrientation = camera.eulerAngles
+        //self.currentLocation = camera.transform
     }
 
     func session(_ session: ARSession, didFailWithError error: Error) {
@@ -410,7 +429,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, AR
         let node = SCNNode()
         node.geometry = SCNBox(width: size, height: size, length: size, chamferRadius: size)
         node.geometry?.firstMaterial?.diffuse.contents = color
-       // node.position = SCNVector3(x,floorLevel,z)
         node.position = SCNVector3(x,y,z)
         node.name = "map"
         self.sceneView.scene.rootNode.addChildNode(node)
@@ -425,18 +443,9 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, AR
     }
 
     func refresh() {
-        var color : UIColor
         for element in map.mapGrid.values {
             if element.confidence > confidenceThreshold {
-                switch element.content {
-                case .object: color = .cyan
-                case .floor: color = .blue
-                case .wall: color = .red
-                case .center: color = .purple
-                default: color = .white
-                }
-                //add(x: element.x, y: floorLevel, z: element.z, color: color, size: 0.01)
-                add(x: element.x, y: element.y, z: element.z, color: color, size: 0.01)
+                add(x: element.x, y: element.y, z: element.z, color: element.getElementColor(), size: 0.01)
             }
         }
     }
@@ -496,7 +505,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, AR
             return simd_float3(x: x2 + center.x, y: y2 + center.y, z: z2 + center.z)
     }
 
-
     func getGridSize() -> Float {
         return map.gridSize
     }
@@ -532,6 +540,19 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, AR
         func getMapElements() -> [MapElement] {
             return map.getMap()
         }
+
+    func getCameraOrientation() -> vector_float3? {
+        return self.currentOrientation
+    }
+
+    func getCameraLocation() -> SCNVector3? {
+        return self.currentLocation
+    }
+
+    func getCurrentPositionOfCamera() -> SCNVector3 {
+        return self.currentPositionOfCamera
+    }
+
 
 }
 

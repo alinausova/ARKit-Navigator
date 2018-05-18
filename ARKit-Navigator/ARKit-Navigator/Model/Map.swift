@@ -217,8 +217,7 @@ class Map {
             if old.content == newMapElement.content {
                 old.confidence += 1
             } else if old.confidence < newMapElement.confidence {
-                old.changeContent(content: newMapElement.content)
-                old.confidence = newMapElement.confidence
+                mapGrid[newKey] = newMapElement
             }
         } else {
             mapGrid[newKey] = newMapElement
@@ -359,7 +358,10 @@ class Map {
     func getMap() -> [MapElement] {
         var result : [MapElement] = []
         for mapEl in mapGrid.values {
-            result.append(mapEl)
+            if !mapEl.loadedInMap {
+                result.append(mapEl)
+                mapEl.loadedInMap = true
+            }
         }
         return result
     }
@@ -381,6 +383,7 @@ class MapElement {
     var z : Float
     var confidence = 0.0
     var content = MapContent.notDefined
+    var loadedInMap = false
 
 
     init(x: Float, y: Float, z: Float) {
@@ -411,10 +414,10 @@ class MapElement {
     func getElementColor() -> UIColor {
         let color : UIColor
         switch self.content {
-        case .object: color = .cyan
-        case .floor: color = .blue
-        case .wall: color = .red
-        case .center: color = .purple
+        case .object: color = UIColor(red:0.39, green:0.80, blue:0.85, alpha:0.5)
+        case .floor: color = UIColor(red:0.97, green:0.84, blue:0.58, alpha:0.5)
+        case .wall: color = UIColor(red:0.47, green:0.44, blue:0.65, alpha:0.5)
+        case .center: color = UIColor(red:0.95, green:0.65, blue:0.51, alpha:0.8)
         default: color = .white
         }
         return color
