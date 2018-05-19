@@ -1,8 +1,8 @@
 //
-//  MapViewController.swift
+//  MapPreViewController.swift
 //  ARKit-Navigator
 //
-//  Created by Alina Usova on 02/05/2018.
+//  Created by Alina Usova on 19/05/2018.
 //  Copyright © 2018 alinausova. All rights reserved.
 //
 
@@ -11,28 +11,16 @@ import UIKit
 import ARKit
 import SpriteKit
 
-protocol  MapViewDelegate {
-//    func getFloorPoints() -> [MapElement2d]
-//    func getWallPoints() -> [MapElement2d]
-//    func getObjectPoints() -> [MapElement2d]
-//    func getMapElements() -> [MapElement2d]
-    func getFloorPoints() -> [MapElement]
-    func getWallPoints() -> [MapElement]
-    func getObjectPoints() -> [MapElement]
-    func getMapElements() -> [MapElement]
-    func getGridSize() -> Float
-    func getCameraOrientation() -> vector_float3?
-    func getCameraLocation() -> SCNVector3?
-    func getCurrentPositionOfCamera() -> SCNVector3
+protocol  MapPreViewDelegate : MapViewDelegate {
 }
 
-class MapViewController: UIViewController {
-
+class MapPreViewController : UIViewController {
+    
     @IBOutlet weak var mapSKView: SKView!
 
-    var delegate: MapViewDelegate?
+    var delegate: MapPreViewDelegate?
 
-    let scene = SKScene(size: CGSize(width: 327, height: 537))
+    let scene = SKScene(size: CGSize(width: 512, height: 512))
 
     var mapTimer: Timer?
     var mapRefreshRate = 0.07
@@ -74,8 +62,8 @@ class MapViewController: UIViewController {
                 //newNode.childNode(withName: "rect")?.zPosition = -1
 
                 backNode.addChild(newNode)
-                newNode.zPosition = 5
-                newRectNode.zPosition = -1
+//                newNode.zPosition = 5
+//                newRectNode.zPosition = -1
             }
             updateMap()
         }
@@ -87,16 +75,12 @@ class MapViewController: UIViewController {
         })
     }
 
-    @IBAction func goBack(_ sender: Any) {
-        dismiss(animated: true, completion: nil)
-    }
-
     func updateMap() {
         if let currentOrientation = delegate?.getCurrentPositionOfCamera(),
             let currentPosition = delegate?.getCameraLocation() {
             self.scene.childNode(withName: "backNode")?.zRotation = CGFloat(currentOrientation.x)
             self.scene.childNode(withName: "backNode")?.childNode(withName: "camera")?.position =
-            CGPoint (x: CGFloat(currentPosition.x * 100), y: -CGFloat(currentPosition.z * 100))
+                CGPoint (x: CGFloat(currentPosition.x * 100), y: -CGFloat(currentPosition.z * 100))
             self.scene.childNode(withName: "backNode")?.childNode(withName: "camera")?.zRotation = CGFloat(-currentOrientation.x)
         }
         if let mapElements = delegate?.getMapElements(),
@@ -112,4 +96,6 @@ class MapViewController: UIViewController {
             }
         }
     }
+
+
 }

@@ -18,6 +18,7 @@
 		0EB5355E2098739700D4D0AE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0EB5355C2098739700D4D0AE /* LaunchScreen.storyboard */; };
 		0EB5356620988E6E00D4D0AE /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB5356520988E6E00D4D0AE /* Map.swift */; };
 		0EB5356B2099D3D400D4D0AE /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB5356A2099D3D400D4D0AE /* MapViewController.swift */; };
+		0EE6C4E520B064DD00351A6D /* MapPreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE6C4E420B064DD00351A6D /* MapPreViewController.swift */; };
 		0EF9DD2420AE262B00B9E5A6 /* MapScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 0EF9DD2320AE262B00B9E5A6 /* MapScene.sks */; };
 /* End PBXBuildFile section */
 
@@ -35,6 +36,7 @@
 		0EB5355F2098739700D4D0AE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0EB5356520988E6E00D4D0AE /* Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
 		0EB5356A2099D3D400D4D0AE /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		0EE6C4E420B064DD00351A6D /* MapPreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPreViewController.swift; sourceTree = "<group>"; };
 		0EF9DD2320AE262B00B9E5A6 /* MapScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MapScene.sks; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -112,6 +114,7 @@
 			children = (
 				0EB535552098739600D4D0AE /* ARViewController.swift */,
 				0EB5356A2099D3D400D4D0AE /* MapViewController.swift */,
+				0EE6C4E420B064DD00351A6D /* MapPreViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -198,6 +201,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E02867D20A343FB003D166E /* StatusViewController.swift in Sources */,
+				0EE6C4E520B064DD00351A6D /* MapPreViewController.swift in Sources */,
 				0EB535562098739600D4D0AE /* ARViewController.swift in Sources */,
 				0E02866B20A089EE003D166E /* Inceptionv3.mlmodel in Sources */,
 				0E02867C20A343FB003D166E /* Utilities.swift in Sources */,

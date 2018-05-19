@@ -11,10 +11,12 @@ import ARKit
 import CoreML
 import Vision
 
-class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, ARSessionDelegate {
+class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, MapPreViewDelegate, ARSessionDelegate {
 
     @IBOutlet weak var sceneView: ARSCNView!
     @IBOutlet weak var sceneLabel: UILabel!
+    @IBOutlet weak var mapPreView: UIView!
+
 
     private lazy var statusViewController: StatusViewController = {
         return childViewControllers.lazy.flatMap({ $0 as? StatusViewController }).first!
@@ -37,6 +39,9 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, AR
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        mapPreView.layer.cornerRadius = 128
+        mapPreView.layer.masksToBounds = true
+
         sceneView.delegate = self
         self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, ARSCNDebugOptions.showWorldOrigin]
         configuration.planeDetection = [.horizontal, .vertical]
@@ -53,6 +58,9 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, AR
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nav = segue.destination as? MapViewController {
                nav.delegate = self
+        }
+        if let nav = segue.destination as? MapPreViewController {
+            nav.delegate = self
         }
     }
 

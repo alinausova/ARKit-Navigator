@@ -385,7 +385,6 @@ class MapElement {
     var content = MapContent.notDefined
     var loadedInMap = false
 
-
     init(x: Float, y: Float, z: Float) {
         self.x = x
         self.y = y
