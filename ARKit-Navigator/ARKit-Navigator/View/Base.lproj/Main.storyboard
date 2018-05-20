@@ -83,6 +83,13 @@
                                     <segue destination="VBQ-KJ-0fs" kind="embed" id="oTc-d9-LLT"/>
                                 </connections>
                             </containerView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iHq-Q6-0Qo" userLabel="Show Map Preview Button">
+                                <rect key="frame" x="103" y="395" width="256" height="256"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="256" id="Iss-EB-q4p"/>
+                                    <constraint firstAttribute="width" constant="256" id="mQU-zs-WUH"/>
+                                </constraints>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -99,6 +106,8 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="HH4-cn-en3" secondAttribute="trailing" constant="16" id="ZFj-Td-LfQ"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="HH4-cn-en3" secondAttribute="bottom" constant="16" id="crD-t0-t0K"/>
                             <constraint firstItem="wfL-Af-pq3" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="eKL-Ck-wPI"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="iHq-Q6-0Qo" secondAttribute="trailing" constant="16" id="hD5-NW-i70"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="iHq-Q6-0Qo" secondAttribute="bottom" constant="16" id="k3O-12-vA7"/>
                             <constraint firstItem="xXp-8y-UlZ" firstAttribute="top" secondItem="vrd-PE-eTM" secondAttribute="bottom" constant="16" id="kni-2M-jAW"/>
                             <constraint firstItem="G4u-Zt-etW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="mca-rP-6t1"/>
                             <constraint firstItem="OrG-qM-JvR" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="rpq-pg-UCB"/>
@@ -109,6 +118,7 @@
                     </view>
                     <connections>
                         <outlet property="mapPreView" destination="HH4-cn-en3" id="f1t-0m-aI6"/>
+                        <outlet property="mapPreviewButton" destination="iHq-Q6-0Qo" id="CW8-rV-Pfe"/>
                         <outlet property="sceneLabel" destination="OrG-qM-JvR" id="onS-Ei-GUx"/>
                         <outlet property="sceneView" destination="G4u-Zt-etW" id="sDV-Xc-MsY"/>
                     </connections>
@@ -218,11 +228,11 @@
                     <visualEffectView key="view" opaque="NO" contentMode="scaleToFill" id="ej5-Ki-vPo">
                         <rect key="frame" x="0.0" y="0.0" width="256" height="256"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.69999999999999996" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="kKV-i9-d6S">
+                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.75" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="kKV-i9-d6S">
                             <rect key="frame" x="0.0" y="0.0" width="256" height="256"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <skView opaque="NO" alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Afd-lo-dof">
+                                <skView opaque="NO" alpha="0.75" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Afd-lo-dof">
                                     <rect key="frame" x="0.0" y="0.0" width="256" height="256"/>
                                     <color key="backgroundColor" red="0.91194196428571428" green="0.74654017857142863" blue="0.8659319196428571" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="tintColor" red="0.79082031249999996" green="0.74654017857142863" blue="0.8659319196428571" alpha="1" colorSpace="calibratedRGB"/>

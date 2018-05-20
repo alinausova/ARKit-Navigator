@@ -413,10 +413,10 @@ class MapElement {
     func getElementColor() -> UIColor {
         let color : UIColor
         switch self.content {
-        case .object: color = UIColor(red:0.39, green:0.80, blue:0.85, alpha:0.5)
-        case .floor: color = UIColor(red:0.97, green:0.84, blue:0.58, alpha:0.5)
-        case .wall: color = UIColor(red:0.47, green:0.44, blue:0.65, alpha:0.5)
-        case .center: color = UIColor(red:0.95, green:0.65, blue:0.51, alpha:0.8)
+        case .object: color = UIColor(red:0.39, green:0.80, blue:0.85, alpha:0.8)
+        case .floor: color = UIColor(red:0.97, green:0.84, blue:0.58, alpha:0.8)
+        case .wall: color = UIColor(red:0.47, green:0.44, blue:0.65, alpha:0.8)
+        case .center: color = UIColor(red:0.95, green:0.65, blue:0.51, alpha:1)
         default: color = .white
         }
         return color

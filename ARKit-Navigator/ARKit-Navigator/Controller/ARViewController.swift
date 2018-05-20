@@ -16,6 +16,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     @IBOutlet weak var sceneView: ARSCNView!
     @IBOutlet weak var sceneLabel: UILabel!
     @IBOutlet weak var mapPreView: UIView!
+    @IBOutlet weak var mapPreviewButton: UIButton!
 
 
     private lazy var statusViewController: StatusViewController = {
@@ -208,9 +209,16 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         let transform = pointOfView.transform
         let orientation = SCNVector3(-transform.m31, -transform.m32, transform.m33)
         let location = SCNVector3(transform.m41, transform.m42, transform.m43)
-        self.currentPositionOfCamera = sumSCNVectors(lhv: orientation, rhv: location)
+        if let quat = self.sceneView.pointOfView?.presentation.worldOrientation {
+            let myRoll = atan2(2*(quat.y*quat.w - quat.x*quat.z), 1 - 2*quat.y*quat.y - 2*quat.z*quat.z)
+            let myPitch = GLKMathRadiansToDegrees(atan2(2*(quat.x*quat.w + quat.y*quat.z), 1 - 2*quat.x*quat.x - 2*quat.z*quat.z))
+            let myYaw = GLKMathRadiansToDegrees(asin(2*quat.x*quat.y + 2*quat.w*quat.z))
+            print("\(myRoll) - \(myPitch) - \(myYaw) - ")
+             self.currentPositionOfCamera = SCNVector3(x: myRoll, y: 0, z: 0)
+        }
+        //self.currentPositionOfCamera = sumSCNVectors(lhv: orientation, rhv: location)
         self.currentLocation = location
-        print("\(currentLocation)")
+        //print("\(currentLocation)")
     }
 
     func sumSCNVectors(lhv:SCNVector3, rhv:SCNVector3) -> SCNVector3 {
@@ -458,6 +466,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         }
     }
 
+    // MARK: - IBActions
+
     @IBAction func showMap(_ sender: Any) {
         clear()
         map.fillFloor()
@@ -469,6 +479,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
             print("\n Center: \(planeAnchor.center),  Extent \(planeAnchor.extent),\n \(planeAnchor.alignment), \n Description \(planeAnchor.description),\n Transform \(planeAnchor.transform)")
         }
     }
+
+    //MARK: - Rotation
 
     func getCos(from: Float) -> Float {
         return cos( (from) * .pi / 180)
@@ -513,41 +525,27 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
             return simd_float3(x: x2 + center.x, y: y2 + center.y, z: z2 + center.z)
     }
 
+    // MARK: - Delegate functions
+
     func getGridSize() -> Float {
         return map.gridSize
     }
 
-//    func getFloorPoints() -> [MapElement2d] {
-//        return map.getFloor()
-//    }
-//
-//    func getWallPoints() -> [MapElement2d] {
-//        return map.getWall()
-//    }
-//
-//    func getObjectPoints() -> [MapElement2d] {
-//        return map.getObjects()
-//    }
-//
-//    func getMapElements() -> [MapElement2d] {
-//        return map.getMap()
-//    }
+    func getFloorPoints() -> [MapElement] {
+        return map.getFloor()
+    }
 
-        func getFloorPoints() -> [MapElement] {
-            return map.getFloor()
-        }
+    func getWallPoints() -> [MapElement] {
+        return map.getWall()
+    }
 
-        func getWallPoints() -> [MapElement] {
-            return map.getWall()
-        }
+    func getObjectPoints() -> [MapElement] {
+        return map.getObjects()
+    }
 
-        func getObjectPoints() -> [MapElement] {
-            return map.getObjects()
-        }
-
-        func getMapElements() -> [MapElement] {
-            return map.getMap()
-        }
+    func getMapElements() -> [MapElement] {
+        return map.getMap()
+    }
 
     func getCameraOrientation() -> vector_float3? {
         return self.currentOrientation
