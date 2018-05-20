@@ -63,7 +63,7 @@
                                     <segue destination="7wV-HK-Elr" kind="embed" id="43f-Al-EYA"/>
                                 </connections>
                             </containerView>
-                            <containerView opaque="NO" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HH4-cn-en3" userLabel="Map  PreView">
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HH4-cn-en3" userLabel="Map  PreView">
                                 <rect key="frame" x="103" y="395" width="256" height="256"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="256" id="DKZ-lI-kCo"/>
@@ -73,7 +73,7 @@
                                     <segue destination="VBQ-KJ-0fs" kind="embed" id="oTc-d9-LLT"/>
                                 </connections>
                             </containerView>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iHq-Q6-0Qo" userLabel="Show Map Preview Button">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iHq-Q6-0Qo" userLabel="Show Map Preview Button">
                                 <rect key="frame" x="103" y="395" width="256" height="256"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="256" id="Iss-EB-q4p"/>
@@ -146,7 +146,7 @@
                                         <constraint firstItem="0xl-C4-a1N" firstAttribute="centerX" secondItem="lEz-hx-yUh" secondAttribute="centerX" id="qHQ-xg-STy"/>
                                     </constraints>
                                 </view>
-                                <blurEffect style="light"/>
+                                <blurEffect style="dark"/>
                             </visualEffectView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kRC-U7-bEj">
                                 <rect key="frame" x="16" y="36" width="46" height="46"/>
@@ -256,7 +256,7 @@
                                 <constraint firstAttribute="bottom" secondItem="Afd-lo-dof" secondAttribute="bottom" id="yup-oP-jY1"/>
                             </constraints>
                         </view>
-                        <blurEffect style="light"/>
+                        <blurEffect style="dark"/>
                     </visualEffectView>
                     <connections>
                         <outlet property="mapSKView" destination="Afd-lo-dof" id="0Bp-ow-WFY"/>

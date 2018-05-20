@@ -104,7 +104,7 @@ class Map {
 
     func addFloorToGrid(newElement: ARPlaneAnchor) {
         var newFloorPoints : [MapElement] = []
-            for element in transform(planeAnchor: newElement) {
+            for element in translatePlane(planeAnchor: newElement) {
                 let newMapElement = MapElement (x: round(element.x / gridSize) * gridSize,
                                                 y: round(element.y / gridSize) * gridSize,
                                                 z: round(element.z / gridSize) * gridSize,
@@ -149,7 +149,7 @@ class Map {
 
     func addWallToGrid(newElement: ARPlaneAnchor) {
         var newWallPoints : [MapElement] = []
-        for element in transform(planeAnchor: newElement) {
+        for element in translatePlane(planeAnchor: newElement) {
             let newMapElement = MapElement (x: round(element.x / gridSize) * gridSize,
                                             y: round(element.y / gridSize) * gridSize,
                                             z: round(element.z / gridSize) * gridSize,
@@ -224,52 +224,104 @@ class Map {
         }
     }
 
-    func transform(planeAnchor: ARPlaneAnchor) -> [simd_float3] {
-        var result: [simd_float3] = []
-        let aVector = getCosSinVectors(planeAnchor: planeAnchor)
-        let center = simd_float3(x: planeAnchor.transform.columns.3.x + planeAnchor.center.x,
-                                 y: planeAnchor.transform.columns.3.y + planeAnchor.center.y,
-                                 z: planeAnchor.transform.columns.3.z + planeAnchor.center.z)
+//    func transform(planeAnchor: ARPlaneAnchor) -> [simd_float3] {
+//        var result: [simd_float3] = []
+//        let aVector = getCosSinVectors(planeAnchor: planeAnchor)
+//        let center = simd_float3(x: planeAnchor.transform.columns.3.x + planeAnchor.center.x,
+//                                 y: planeAnchor.transform.columns.3.y + planeAnchor.center.y,
+//                                 z: planeAnchor.transform.columns.3.z + planeAnchor.center.z)
+//
+//        if planeAnchor.alignment == .vertical {
+//            for point in planeAnchor.geometry.boundaryVertices {
+//                let y2 = point.y * 0 - point.z * 1
+//                let z1 = point.y * 1 + point.z * 0
+//                let x2 = point.x * aVector[0].y - z1 * aVector[1].y
+//                let z2 = point.x * aVector[1].y + z1 * aVector[0].y
+//                result.append(simd_float3(x: x2 + center.x, y: y2 + center.y, z: z2 + center.z))
+//            }
+//        } else {
+//            for point in planeAnchor.geometry.boundaryVertices {
+//                let x2 = point.x * aVector[0].y - point.z * aVector[1].y
+//                let z2 = point.x * aVector[1].y + point.z * aVector[0].y
+//                let y2 = point.y
+//                result.append(simd_float3(x: x2 + center.x, y: y2 + center.y, z: z2 + center.z))
+//            }
+//        }
+//        return result
+//    }
 
-        if planeAnchor.alignment == .vertical {
-            for point in planeAnchor.geometry.boundaryVertices {
-                let y2 = point.y * 0 - point.z * 1
-                let z1 = point.y * 1 + point.z * 0
-                let x2 = point.x * aVector[0].y - z1 * aVector[1].y
-                let z2 = point.x * aVector[1].y + z1 * aVector[0].y
-                result.append(simd_float3(x: x2 + center.x, y: y2 + center.y, z: z2 + center.z))
+    func makeXRotationMatrix(angle: Float) -> simd_float3x3 {
+        let rows = [
+            simd_float3( 1,     0,              0),
+            simd_float3( 0,     cos(angle),     sin(angle)),
+            simd_float3( 0,     -sin(angle),    cos(angle)),
+        ]
+
+        return float3x3(rows: rows)
+    }
+
+    func makeYRotationMatrix(angle: Float) -> simd_float3x3 {
+        let rows = [
+            simd_float3( cos(angle),  0,    sin(angle)),
+            simd_float3( 0,           1,    0),
+            simd_float3( -sin(angle), 0,    cos(angle)),
+        ]
+
+        return float3x3(rows: rows)
+    }
+
+    func translatePlane(planeAnchor: ARPlaneAnchor) -> [simd_float3] {
+        var result: [simd_float3] = []
+
+        let string = planeAnchor.description
+        let end = string.components(separatedBy: CharacterSet(charactersIn : "()"))[3].components(separatedBy: "°")
+
+        let y = Float(end[1].trimmingCharacters(in: CharacterSet(charactersIn: " ")))!
+
+        let center = simd_float3(x: planeAnchor.transform.columns.3.x, //+ planeAnchor.center.x,
+                                 y: planeAnchor.transform.columns.3.y, //+ planeAnchor.center.y,
+                                 z: planeAnchor.transform.columns.3.z) //+ planeAnchor.center.z)
+
+        let xRotationMatrix = makeXRotationMatrix(angle: GLKMathDegreesToRadians(90))
+        let yRotationMatrix = makeYRotationMatrix(angle: GLKMathDegreesToRadians(-y))
+
+        for point in planeAnchor.geometry.boundaryVertices {
+
+            var transformedPoint = point
+            if planeAnchor.alignment == .vertical {
+                transformedPoint = transformedPoint * xRotationMatrix
             }
-        } else {
-            for point in planeAnchor.geometry.boundaryVertices {
-                let x2 = point.x * aVector[0].y - point.z * aVector[1].y
-                let z2 = point.x * aVector[1].y + point.z * aVector[0].y
-                let y2 = point.y
-                result.append(simd_float3(x: x2 + center.x, y: y2 + center.y, z: z2 + center.z))
-            }
+            transformedPoint = transformedPoint * yRotationMatrix
+            transformedPoint = simd_float3(transformedPoint.x  + center.x,
+                                           transformedPoint.y  + center.y,
+                                           transformedPoint.z + center.z)
+            result.append(transformedPoint)
         }
         return result
     }
 
-    func getCos(from: Float) -> Float {
-        return cos( (from) * .pi / 180)
-    }
+//    func getCos(from: Float) -> Float {
+//        return cos( (from) * .pi / 180)
+//    }
+//
+//    func getSin(from: Float) -> Float {
+//        return sin( (from) * .pi / 180)
+//    }
+//
+//    func getCosSinVectors(planeAnchor: ARPlaneAnchor) -> [simd_float3] {
+//        let string = planeAnchor.description
+//        let end = string.components(separatedBy: CharacterSet(charactersIn : "()"))[3].components(separatedBy: "°")
+//
+//        print ("\(end)")
+//        let x = Float(end[0].trimmingCharacters(in: CharacterSet(charactersIn: " ")))!
+//        let y = Float(end[1].trimmingCharacters(in: CharacterSet(charactersIn: " ")))!
+//        let z = Float(end[2].trimmingCharacters(in: CharacterSet(charactersIn: " ")))!
+//
+//        return [simd_float3(x: getCos(from: -x), y: getCos(from:  -y - z), z: getCos(from:  -z)),
+//                simd_float3(x: getSin(from:  -x), y: getSin(from:  -y - z), z: getSin(from:  -z))]
+//    }
 
-    func getSin(from: Float) -> Float {
-        return sin( (from) * .pi / 180)
-    }
 
-    func getCosSinVectors(planeAnchor: ARPlaneAnchor) -> [simd_float3] {
-        let string = planeAnchor.description
-        let end = string.components(separatedBy: CharacterSet(charactersIn : "()"))[3].components(separatedBy: "°")
-
-        print ("\(end)")
-        let x = Float(end[0].trimmingCharacters(in: CharacterSet(charactersIn: " ")))!
-        let y = Float(end[1].trimmingCharacters(in: CharacterSet(charactersIn: " ")))!
-        let z = Float(end[2].trimmingCharacters(in: CharacterSet(charactersIn: " ")))!
-
-        return [simd_float3(x: getCos(from: -x), y: getCos(from:  -y - z), z: getCos(from:  -z)),
-                simd_float3(x: getSin(from:  -x), y: getSin(from:  -y - z), z: getSin(from:  -z))]
-    }
 
     func createKey (mapElement: MapElement) -> String {
         return "\(mapElement.x):\(mapElement.y):\(mapElement.z)"
@@ -419,10 +471,10 @@ class MapElement {
     func getElementColor() -> UIColor {
         let color : UIColor
         switch self.content {
-        case .object: color = UIColor(red:0.39, green:0.80, blue:0.85, alpha:0.8)
-        case .floor: color = UIColor(red:0.97, green:0.84, blue:0.58, alpha:0.8)
-        case .wall: color = UIColor(red:0.47, green:0.44, blue:0.65, alpha:0.8)
-        case .center: color = UIColor(red:0.95, green:0.65, blue:0.51, alpha:1)
+        case .object: color = UIColor(red:0.47, green:0.88, blue:0.56, alpha:1.0)
+        case .floor: color = UIColor(red:0.96, green:0.73, blue:0.23, alpha:1.0)
+        case .wall: color = UIColor(red:0.29, green:0.41, blue:0.74, alpha:1.0)
+        case .center: color = UIColor(red:0.90, green:0.31, blue:0.22, alpha:1.0)
         default: color = .white
         }
         return color

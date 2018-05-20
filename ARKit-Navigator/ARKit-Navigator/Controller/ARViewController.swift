@@ -13,6 +13,8 @@ import Vision
 
 class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, MapPreViewDelegate, ARSessionDelegate {
 
+    // MARK: - IBOutlets
+
     @IBOutlet weak var sceneView: ARSCNView!
     @IBOutlet weak var sceneLabel: UILabel!
     @IBOutlet weak var mapPreView: UIView!
@@ -28,10 +30,9 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     var mapElements : [ARAnchor] = []
     var floorLevel : Float = 100.0
     var appleIsNotFound = true
-    var currentPositionOfCamera = SCNVector3(x: 0, y: 0, z: 0)
+    var currentPositionOfCamera: CGFloat = 0
 
-    //var map = Map2D()
-    var map = Map()
+    var map = Map() //Map2D()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -207,22 +208,13 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
         guard let pointOfView = sceneView.pointOfView else { return }
         let transform = pointOfView.transform
-        let orientation = SCNVector3(-transform.m31, -transform.m32, transform.m33)
-        let location = SCNVector3(transform.m41, transform.m42, transform.m43)
+        self.currentLocation = SCNVector3(transform.m41, transform.m42, transform.m43)
         if let quat = self.sceneView.pointOfView?.presentation.worldOrientation {
-            let myRoll = atan2(2*(quat.y*quat.w - quat.x*quat.z), 1 - 2*quat.y*quat.y - 2*quat.z*quat.z)
-            let myPitch = GLKMathRadiansToDegrees(atan2(2*(quat.x*quat.w + quat.y*quat.z), 1 - 2*quat.x*quat.x - 2*quat.z*quat.z))
-            let myYaw = GLKMathRadiansToDegrees(asin(2*quat.x*quat.y + 2*quat.w*quat.z))
-            print("\(myRoll) - \(myPitch) - \(myYaw) - ")
-             self.currentPositionOfCamera = SCNVector3(x: myRoll, y: 0, z: 0)
+            let roll = atan2(2*(quat.y*quat.w - quat.x*quat.z), 1 - 2*quat.y*quat.y - 2*quat.z*quat.z)
+//            let myPitch = GLKMathRadiansToDegrees(atan2(2*(quat.x*quat.w + quat.y*quat.z), 1 - 2*quat.x*quat.x - 2*quat.z*quat.z))
+//            let myYaw = GLKMathRadiansToDegrees(asin(2*quat.x*quat.y + 2*quat.w*quat.z))
+            self.currentPositionOfCamera = CGFloat(roll)
         }
-        //self.currentPositionOfCamera = sumSCNVectors(lhv: orientation, rhv: location)
-        self.currentLocation = location
-        //print("\(currentLocation)")
-    }
-
-    func sumSCNVectors(lhv:SCNVector3, rhv:SCNVector3) -> SCNVector3 {
-        return SCNVector3(lhv.x + rhv.x, lhv.y + rhv.y, lhv.z + rhv.z)
     }
 
     // MARK: - ARSessionDelegate
@@ -484,51 +476,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         refresh()
     }
 
-    //MARK: - Rotation
-
-    func getCos(from: Float) -> Float {
-        return cos( (from) * .pi / 180)
-    }
-
-    func getSin(from: Float) -> Float {
-        return sin( (from) * .pi / 180)
-    }
-
-    func getCosSinVectors(planeAnchor: ARPlaneAnchor) -> [simd_float3] {
-        let string = planeAnchor.description
-        let end = string.components(separatedBy: CharacterSet(charactersIn : "()"))[3].components(separatedBy: "°")
-
-        print ("\(end)")
-        let x = Float(end[0].trimmingCharacters(in: CharacterSet(charactersIn: " ")))!
-        let y = Float(end[1].trimmingCharacters(in: CharacterSet(charactersIn: " ")))!
-        let z = Float(end[2].trimmingCharacters(in: CharacterSet(charactersIn: " ")))!
-
-            return [simd_float3(x: getCos(from: -x), y: getCos(from:  -y - z), z: getCos(from:  -z)),
-                    simd_float3(x: getSin(from:  -x), y: getSin(from:  -y - z), z: getSin(from:  -z))]
-    }
-
-    func rotate(point: simd_float3, planeAnchor: ARPlaneAnchor) -> simd_float3 {
-        let aVector = getCosSinVectors(planeAnchor: planeAnchor)
-        let center = simd_float3(x: planeAnchor.transform.columns.3.x + planeAnchor.center.x,
-                                 y: planeAnchor.transform.columns.3.y + planeAnchor.center.y,
-                                 z: planeAnchor.transform.columns.3.z + planeAnchor.center.z)
-
-        let x2: Float
-        let y2: Float
-        let z2: Float
-        if planeAnchor.alignment == .vertical {
-            y2 = point.y * 0 - point.z * 1
-            let z1 = point.y * 1 + point.z * 0
-            x2 = point.x * aVector[0].y - z1 * aVector[1].y
-            z2 = point.x * aVector[1].y + z1 * aVector[0].y
-        } else {
-            x2 = point.x * aVector[0].y - point.z * aVector[1].y
-            z2 = point.x * aVector[1].y + point.z * aVector[0].y
-            y2 = point.y
-        }
-            return simd_float3(x: x2 + center.x, y: y2 + center.y, z: z2 + center.z)
-    }
-
     // MARK: - Delegate functions
 
     func getGridSize() -> Float {
@@ -551,15 +498,11 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         return map.getMap(onlyNew: onlyNew)
     }
 
-    func getCameraOrientation() -> vector_float3? {
-        return self.currentOrientation
-    }
-
     func getCameraLocation() -> SCNVector3? {
         return self.currentLocation
     }
 
-    func getCurrentPositionOfCamera() -> SCNVector3 {
+    func getCurrentPositionOfCamera() -> CGFloat {
         return self.currentPositionOfCamera
     }
 

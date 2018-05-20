@@ -17,9 +17,8 @@ protocol  MapViewDelegate {
     func getObjectPoints() -> [MapElement]
     func getMapElements(onlyNew: Bool) -> [MapElement]
     func getGridSize() -> Float
-    func getCameraOrientation() -> vector_float3?
     func getCameraLocation() -> SCNVector3?
-    func getCurrentPositionOfCamera() -> SCNVector3
+    func getCurrentPositionOfCamera() -> CGFloat
 }
 
 class MapViewController: UIViewController {
@@ -28,7 +27,7 @@ class MapViewController: UIViewController {
 
     var delegate: MapViewDelegate?
 
-    let scene = SKScene(size: CGSize(width: 1024, height: 1024))
+    let scene = SKScene(size: CGSize(width: 2048, height: 2048))
 
     var mapTimer: Timer?
     var mapRefreshRate = 0.07
@@ -37,10 +36,13 @@ class MapViewController: UIViewController {
         super.viewDidAppear(animated)
         mapSKView.presentScene(scene)
 
+        // Create node for the map base
         let backNode = SKShapeNode(circleOfRadius: scene.size.height)
-        backNode.fillColor = .black
+        backNode.fillColor = .clear
         backNode.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
         backNode.name = "backNode"
+
+        // Load existing map elements
 
         if let mapElements = delegate?.getMapElements(onlyNew: false),
             let gridSize = delegate?.getGridSize() {
@@ -53,27 +55,37 @@ class MapViewController: UIViewController {
                 newNode.lineWidth = 0
                 backNode.addChild(newNode)
             }
+            
+            // Create round node for current device position
+            let roundNode = SKShapeNode(circleOfRadius: scaledGridSize * 3)
+            roundNode.fillColor = UIColor(red:0.72, green:0.08, blue:0.25, alpha:1.0)
+            roundNode.name = "round"
+
             if let cameraLocation = delegate?.getCameraLocation() {
-                let newNode = SKShapeNode(circleOfRadius: scaledGridSize * 3)
-                newNode.position = CGPoint(x: Double(cameraLocation.x * 100), y: Double(cameraLocation.z * 100))
-                newNode.fillColor = UIColor(red:0.97, green:0.56, blue:0.70, alpha:1.0)
-                newNode.name = "camera"
-
-                let rectSize = scaledGridSize * 8
-                let newRectNode = SKShapeNode(rectOf: CGSize(width: rectSize, height: rectSize))
-                newRectNode.zRotation = CGFloat(GLKMathDegreesToRadians(45.0))
-                newRectNode.position = CGPoint(x: 0, y: 3 * sqrt(rectSize))
-                newRectNode.name = "rect"
-                newRectNode.lineWidth = 0
-                newRectNode.fillColor = UIColor(red:0.97, green:0.65, blue:0.76, alpha:0.5)
-                newNode.addChild(newRectNode)
-                //newNode.childNode(withName: "rect")?.zPosition = -1
-
-                backNode.addChild(newNode)
-                newNode.zPosition = 5
-                newRectNode.zPosition = -1
+                roundNode.position = CGPoint(x: Double(cameraLocation.x * 100), y: Double(cameraLocation.z * 100))
+            } else {
+                roundNode.position = CGPoint(x: 0, y: 0)
             }
-            updateMap()
+
+            // Create triangle node for orientation representation
+            let path = UIBezierPath()
+            path.move(to: CGPoint(x: 0.0, y: 50.0))
+            path.addLine(to: CGPoint(x: 50.0, y: -36.6))
+            path.addLine(to: CGPoint(x: -50.0, y: -36.6))
+            path.addLine(to: CGPoint(x: 0.0, y: 50.0))
+
+            let triangleNode = SKShapeNode(path: path.cgPath)
+            triangleNode.fillColor = UIColor(red:0.72, green:0.08, blue:0.25, alpha:0.5)
+            triangleNode.name = "triangle"
+            triangleNode.lineWidth = 0
+            triangleNode.zRotation = CGFloat(GLKMathDegreesToRadians(180))
+            triangleNode.yScale = 0.5
+            triangleNode.position = CGPoint(x: 0, y: 20)
+            roundNode.addChild(triangleNode)
+
+            backNode.addChild(roundNode)
+            roundNode.zPosition = 15
+            triangleNode.zPosition = -1
         }
 
         scene.addChild(backNode)
@@ -91,9 +103,9 @@ class MapViewController: UIViewController {
         if let currentOrientation = delegate?.getCurrentPositionOfCamera(),
             let currentPosition = delegate?.getCameraLocation() {
 //            self.scene.childNode(withName: "backNode")?.zRotation = CGFloat(currentOrientation.x)
-            self.scene.childNode(withName: "backNode")?.childNode(withName: "camera")?.position =
+            self.scene.childNode(withName: "backNode")?.childNode(withName: "round")?.position =
             CGPoint (x: CGFloat(currentPosition.x * 100), y: -CGFloat(currentPosition.z * 100))
-            self.scene.childNode(withName: "backNode")?.childNode(withName: "camera")?.zRotation = CGFloat(currentOrientation.x)
+            self.scene.childNode(withName: "backNode")?.childNode(withName: "round")?.zRotation = CGFloat(currentOrientation)
         }
         if let mapElements = delegate?.getMapElements(onlyNew: true),
             let gridSize = delegate?.getGridSize() {
