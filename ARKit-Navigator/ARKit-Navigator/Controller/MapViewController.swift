@@ -12,14 +12,10 @@ import ARKit
 import SpriteKit
 
 protocol  MapViewDelegate {
-//    func getFloorPoints() -> [MapElement2d]
-//    func getWallPoints() -> [MapElement2d]
-//    func getObjectPoints() -> [MapElement2d]
-//    func getMapElements() -> [MapElement2d]
     func getFloorPoints() -> [MapElement]
     func getWallPoints() -> [MapElement]
     func getObjectPoints() -> [MapElement]
-    func getMapElements() -> [MapElement]
+    func getMapElements(onlyNew: Bool) -> [MapElement]
     func getGridSize() -> Float
     func getCameraOrientation() -> vector_float3?
     func getCameraLocation() -> SCNVector3?
@@ -32,7 +28,7 @@ class MapViewController: UIViewController {
 
     var delegate: MapViewDelegate?
 
-    let scene = SKScene(size: CGSize(width: 327, height: 537))
+    let scene = SKScene(size: CGSize(width: 1024, height: 1024))
 
     var mapTimer: Timer?
     var mapRefreshRate = 0.07
@@ -42,11 +38,11 @@ class MapViewController: UIViewController {
         mapSKView.presentScene(scene)
 
         let backNode = SKShapeNode(circleOfRadius: scene.size.height)
-        backNode.fillColor = .lightGray
+        backNode.fillColor = .black
         backNode.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
         backNode.name = "backNode"
 
-        if let mapElements = delegate?.getMapElements(),
+        if let mapElements = delegate?.getMapElements(onlyNew: false),
             let gridSize = delegate?.getGridSize() {
             let scaledGridSize = CGFloat(gridSize * 100)
             for element in mapElements {
@@ -94,12 +90,12 @@ class MapViewController: UIViewController {
     func updateMap() {
         if let currentOrientation = delegate?.getCurrentPositionOfCamera(),
             let currentPosition = delegate?.getCameraLocation() {
-            self.scene.childNode(withName: "backNode")?.zRotation = CGFloat(currentOrientation.x)
+//            self.scene.childNode(withName: "backNode")?.zRotation = CGFloat(currentOrientation.x)
             self.scene.childNode(withName: "backNode")?.childNode(withName: "camera")?.position =
             CGPoint (x: CGFloat(currentPosition.x * 100), y: -CGFloat(currentPosition.z * 100))
-            self.scene.childNode(withName: "backNode")?.childNode(withName: "camera")?.zRotation = CGFloat(-currentOrientation.x)
+            self.scene.childNode(withName: "backNode")?.childNode(withName: "camera")?.zRotation = CGFloat(currentOrientation.x)
         }
-        if let mapElements = delegate?.getMapElements(),
+        if let mapElements = delegate?.getMapElements(onlyNew: true),
             let gridSize = delegate?.getGridSize() {
             let scaledGridSize = CGFloat(gridSize * 100)
             for element in mapElements {

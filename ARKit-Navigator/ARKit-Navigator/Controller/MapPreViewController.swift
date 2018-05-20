@@ -39,7 +39,7 @@ class MapPreViewController : UIViewController {
         backNode.position = CGPoint(x: 0, y: 0)
         backNode.name = "backNode"
 
-        if let mapElements = delegate?.getMapElements(),
+        if let mapElements = delegate?.getMapElements(onlyNew: false),
             let gridSize = delegate?.getGridSize() {
             let scaledGridSize = CGFloat(gridSize * 100)
             for element in mapElements {
@@ -97,7 +97,7 @@ class MapPreViewController : UIViewController {
                                      y: CGFloat(currentPosition.z * 100))
 
         }
-        if let mapElements = delegate?.getMapElements(),
+        if let mapElements = delegate?.getMapElements(onlyNew: true),
             let gridSize = delegate?.getGridSize() {
             let scaledGridSize = CGFloat(gridSize * 100)
             for element in mapElements {

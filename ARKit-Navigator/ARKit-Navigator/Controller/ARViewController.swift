@@ -468,16 +468,20 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
 
     // MARK: - IBActions
 
+    @IBAction func showMapPreview(_ sender: Any) {
+        if mapPreviewButton.isHidden {
+            mapPreviewButton.isHidden = false
+            mapPreView.alpha = 1
+        } else {
+            mapPreviewButton.isHidden = true
+            mapPreView.alpha = 0
+        }
+    }
+
     @IBAction func showMap(_ sender: Any) {
         clear()
         map.fillFloor()
         refresh()
-    }
-
-    @IBAction func describeMap(_ sender: Any) {
-        for planeAnchor in map.floorElements {
-            print("\n Center: \(planeAnchor.center),  Extent \(planeAnchor.extent),\n \(planeAnchor.alignment), \n Description \(planeAnchor.description),\n Transform \(planeAnchor.transform)")
-        }
     }
 
     //MARK: - Rotation
@@ -543,8 +547,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         return map.getObjects()
     }
 
-    func getMapElements() -> [MapElement] {
-        return map.getMap()
+    func getMapElements(onlyNew: Bool = false) -> [MapElement] {
+        return map.getMap(onlyNew: onlyNew)
     }
 
     func getCameraOrientation() -> vector_float3? {

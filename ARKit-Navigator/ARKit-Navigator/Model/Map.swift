@@ -355,13 +355,19 @@ class Map {
         return cnt
     }
 
-    func getMap() -> [MapElement] {
+    func getMap(onlyNew: Bool) -> [MapElement] {
         var result : [MapElement] = []
-        for mapEl in mapGrid.values {
-            if !mapEl.loadedInMap {
-                result.append(mapEl)
-                mapEl.loadedInMap = true
-            }
+        if onlyNew {
+            for mapEl in mapGrid.values {
+                if !mapEl.loadedInMap {
+                    result.append(mapEl)
+                    mapEl.loadedInMap = true
+                }
+           }
+        } else {
+            for mapEl in mapGrid.values {
+                    result.append(mapEl)
+                }
         }
         return result
     }
