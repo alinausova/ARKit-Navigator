@@ -28,8 +28,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     let configuration = ARWorldTrackingConfiguration()
     let confidenceThreshold = 15.0
     var mapElements : [ARAnchor] = []
+    var isFloorInitialized = false
     var floorLevel : Float = 100.0
-    var appleIsNotFound = true
     var currentPositionOfCamera: CGFloat = 0
 
     var map = Map() //Map2D()
@@ -59,16 +59,21 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nav = segue.destination as? MapViewController {
-               nav.delegate = self
+            nav.delegate = self
         }
         if let nav = segue.destination as? MapPreViewController {
             nav.delegate = self
         }
     }
 
+    // MARK: - Plane Anchors processing
 
+    // Add new planeAnchor to ARView and load it to the map
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
+        if !isFloorInitialized && planeAnchor.alignment == .horizontal {
+            map.setFloor(floorLevel: planeAnchor.transform.columns.3.y)
+        }
 
         let plane = SCNPlane(width: CGFloat(planeAnchor.extent.x), height: CGFloat(planeAnchor.extent.z))
         let planeNode = SCNNode(geometry: plane)
@@ -77,113 +82,12 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         planeNode.eulerAngles.x = -.pi / 2
         planeNode.opacity = 0.1
 
-//        add(x: planeAnchor.transform.columns.3.x,
-//            y: planeAnchor.transform.columns.3.y,
-//            z: planeAnchor.transform.columns.3.z,
-//            color: .green, size: 0.05)
-
-//        add(x: planeAnchor.transform.columns.3.x + planeAnchor.center.x,
-//            y: planeAnchor.transform.columns.3.y + planeAnchor.center.y,
-//            z: planeAnchor.transform.columns.3.z + planeAnchor.center.z,
-//            color: .yellow, size: 0.05)
-//        add(x: planeAnchor.transform.columns.3.x + planeAnchor.transform.columns.0.x,
-//            y: planeAnchor.transform.columns.3.y + planeAnchor.transform.columns.0.y,
-//            z: planeAnchor.transform.columns.3.z + planeAnchor.transform.columns.0.z,
-//            color: .white, size: 0.05)
-//        add(x: planeAnchor.transform.columns.3.x + planeAnchor.transform.columns.1.x,
-//            y: planeAnchor.transform.columns.3.y + planeAnchor.transform.columns.1.y,
-//            z: planeAnchor.transform.columns.3.z + planeAnchor.transform.columns.1.z,
-//            color: .red, size: 0.05)
-//
-//        let center = SCNVector3(x: planeAnchor.transform.columns.3.x + planeAnchor.center.x,
-//                                 y: planeAnchor.transform.columns.3.y + planeAnchor.center.y,
-//                                 z: planeAnchor.transform.columns.3.z + planeAnchor.center.z)
-//
-//        let testPoint = rotate(point: simd_float3(x: 0.1, y: 0, z: 0.1), planeAnchor: planeAnchor)
-//                    add(x: testPoint.x,
-//                        y: testPoint.y,
-//                        z: testPoint.z,
-//                        color: .lightGray, size: 0.02)
-//                    add(x: 0.1, y: 0, z: 0.1,
-//                        color: .darkGray, size: 0.02)
-//
-//
-//        let testPoint1 = rotate(point: simd_float3(x: 0.1, y: 0, z: 0), planeAnchor: planeAnchor)
-//        let testPoint2 = rotate(point: simd_float3(x: 0, y: 0.1, z: 0), planeAnchor: planeAnchor)
-//        let testPoint3 = rotate(point: simd_float3(x: 0, y: 0, z: 0.1), planeAnchor: planeAnchor)
-//
-//        add(x: testPoint1.x, y: testPoint1.y, z: testPoint1.z,
-//            color: .red, size: 0.02)
-//        add(x: testPoint2.x, y: testPoint2.y, z: testPoint2.z,
-//            color: .green, size: 0.02)
-//        add(x: testPoint3.x, y: testPoint3.y, z: testPoint3.z,
-//            color: .blue, size: 0.02)
-//
-//        for element in planeAnchor.geometry.boundaryVertices {
-//            let newPoint = rotate(point: simd_float3(x: element.x, y: element.y, z: element.z), planeAnchor: planeAnchor)
-//            add(x: newPoint.x,
-//                y: newPoint.y,
-//                z: newPoint.z,
-//                color: .lightGray, size: 0.01)
-//            add(x: element.x + center.x,
-//                y: element.y + center.y,
-//                z: element.z + center.z,
-//                color: .darkGray, size: 0.01)
-//        }
-//
-//        let endPosition0 = SCNVector3(x: planeAnchor.transform.columns.3.x + planeAnchor.transform.columns.0.x,
-//                                     y: planeAnchor.transform.columns.3.y + planeAnchor.transform.columns.0.y,
-//                                     z: planeAnchor.transform.columns.3.z + planeAnchor.transform.columns.0.z)
-//        let endPosition1 = SCNVector3(x: planeAnchor.transform.columns.3.x + planeAnchor.transform.columns.1.x,
-//                                      y: planeAnchor.transform.columns.3.y + planeAnchor.transform.columns.1.y,
-//                                      z: planeAnchor.transform.columns.3.z + planeAnchor.transform.columns.1.z)
-//        let endPosition2 = SCNVector3(x: planeAnchor.transform.columns.3.x + planeAnchor.transform.columns.2.x,
-//                                      y: planeAnchor.transform.columns.3.y + planeAnchor.transform.columns.2.y,
-//                                      z: planeAnchor.transform.columns.3.z + planeAnchor.transform.columns.2.z)
-//
-//        addLine(startPosition: center, endPosition: endPosition0)
-//        addLine(startPosition: center, endPosition: endPosition1)
-//        addLine(startPosition: center, endPosition: endPosition2)
-//        addLine(startPosition: SCNVector3(x: 0, y: 0, z: 0), endPosition:  SCNVector3(x: 1, y: 1, z: 1))
-
-       // print("\(planeAnchor.description)")
-
-        print("**********")
-
-
-//        add(x: planeAnchor.transform.columns.3.x,
-//            y: planeAnchor.transform.columns.3.y + 0.1,
-//            z: planeAnchor.transform.columns.3.z,
-//            color: .green, size: 0.05)
-//        add(x: planeAnchor.transform.columns.3.x,
-//            y: planeAnchor.transform.columns.3.y + 0.2,
-//            z: planeAnchor.transform.columns.3.z,
-//            color: .green, size: 0.05)
-//        add(x: planeAnchor.transform.columns.3.x,
-//            y: planeAnchor.transform.columns.3.y,
-//            z: planeAnchor.transform.columns.3.z + 0.1,
-//            color: .yellow, size: 0.05)
-//        add(x: planeAnchor.transform.columns.3.x,
-//            y: planeAnchor.transform.columns.3.y,
-//            z: planeAnchor.transform.columns.3.z + 0.2,
-//            color: .yellow, size: 0.05)
-//        add(x: planeAnchor.transform.columns.3.x + 0.1,
-//            y: planeAnchor.transform.columns.3.y,
-//            z: planeAnchor.transform.columns.3.z,
-//            color: .purple, size: 0.05)
-//        add(x: planeAnchor.transform.columns.3.x + 0.2,
-//            y: planeAnchor.transform.columns.3.y,
-//            z: planeAnchor.transform.columns.3.z,
-//            color: .purple, size: 0.05)
-
-
-
         node.addChildNode(planeNode)
         map.addElement(newElement: planeAnchor)
-        map.addElement(newElement: planeNode)
-        if floorLevel == 100.0 { floorLevel = anchor.transform.columns.3.y }
+
     }
 
+    // Update planeAnchor in ARView and load it to the map
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
         guard let planeAnchor = anchor as?  ARPlaneAnchor,
             let planeNode = node.childNodes.first,
@@ -200,20 +104,23 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         updateStateLabel()
     }
 
+    // Remove planeAnchor from ARView
     func renderer(_ renderer: SCNSceneRenderer, didRemove node: SCNNode, for anchor: ARAnchor) {
         guard let anchorPlane = anchor as? ARPlaneAnchor else { return }
         print("Plane Anchor was removed!", anchorPlane.extent)
     }
 
+    // Update phone location and position of camera
     func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
         guard let pointOfView = sceneView.pointOfView else { return }
-        let transform = pointOfView.transform
-        self.currentLocation = SCNVector3(transform.m41, transform.m42, transform.m43)
+        self.currentLocation = SCNVector3(pointOfView.transform.m41, pointOfView.transform.m42, pointOfView.transform.m43)
         if let quat = self.sceneView.pointOfView?.presentation.worldOrientation {
             let roll = atan2(2*(quat.y*quat.w - quat.x*quat.z), 1 - 2*quat.y*quat.y - 2*quat.z*quat.z)
-//            let myPitch = GLKMathRadiansToDegrees(atan2(2*(quat.x*quat.w + quat.y*quat.z), 1 - 2*quat.x*quat.x - 2*quat.z*quat.z))
-//            let myYaw = GLKMathRadiansToDegrees(asin(2*quat.x*quat.y + 2*quat.w*quat.z))
             self.currentPositionOfCamera = CGFloat(roll)
+
+            // Camera's pitch and yaw calculating
+            //let pitch = GLKMathRadiansToDegrees(atan2(2*(quat.x*quat.w + quat.y*quat.z), 1 - 2*quat.x*quat.x - 2*quat.z*quat.z))
+            //let yaw = GLKMathRadiansToDegrees(asin(2*quat.x*quat.y + 2*quat.w*quat.z))
         }
     }
 
@@ -312,7 +219,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         }
     }
 
-    // Show the classification results in the UI.
+    // Show the classification results in the UI and adding detected object to the map
     private func displayClassifierResults() {
         guard !self.identifierString.isEmpty else {
             return // No object was classified.
@@ -320,17 +227,15 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         let message = String(format: "Detected \(self.identifierString) with %.2f", self.confidence * 100) + "% confidence"
         statusViewController.showMessage(message)
 
-        if self.identifierString == "Granny Smith" && self.confidence * 100 > 90 && appleIsNotFound {
+        if self.identifierString == "Granny Smith" && self.confidence * 100 > 90 {
             let center = self.sceneView.hitTest(CGPoint(x: self.sceneView.accessibilityFrame.width/2, y: self.sceneView.accessibilityFrame.height/2), types: [.featurePoint, .estimatedHorizontalPlane])
             if let result = center.first {
-
-                // Add a new anchor at the tap location.
+                // Add a new anchor location.
                 let anchor = ARAnchor(transform: result.worldTransform)
                 //sceneView.session.add(anchor: anchor)
 
-                // Track anchor ID to associate text with the anchor after ARKit creates a corresponding SKNode.
-                map.addElement(newElement: anchor)
-                //appleIsNotFound = false
+                // Add an object to the map
+                map.addObjectToGrid(newElement: anchor)
             }
         }
     }
@@ -349,7 +254,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
             setOverlaysHidden(false)
         }
         self.currentOrientation = camera.eulerAngles
-        //self.currentLocation = camera.transform
     }
 
     func session(_ session: ARSession, didFailWithError error: Error) {
@@ -399,8 +303,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         statusViewController.cancelAllScheduledMessages()
         statusViewController.showMessage("RESTARTING SESSION")
 
-        //map = Map2D()
-        map = Map()
+        map = Map() //Map2D()
 
         let configuration = ARWorldTrackingConfiguration()
         sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
@@ -472,26 +375,14 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
 
     @IBAction func showMap(_ sender: Any) {
         clear()
-        map.fillFloor()
+        //map.fillFloor()
         refresh()
     }
 
-    // MARK: - Delegate functions
+    // MARK: - Map View delegate functions
 
     func getGridSize() -> Float {
         return map.gridSize
-    }
-
-    func getFloorPoints() -> [MapElement] {
-        return map.getFloor()
-    }
-
-    func getWallPoints() -> [MapElement] {
-        return map.getWall()
-    }
-
-    func getObjectPoints() -> [MapElement] {
-        return map.getObjects()
     }
 
     func getMapElements(onlyNew: Bool = false) -> [MapElement] {
@@ -505,8 +396,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     func getCurrentPositionOfCamera() -> CGFloat {
         return self.currentPositionOfCamera
     }
-
-
 }
 
 extension SCNGeometry {

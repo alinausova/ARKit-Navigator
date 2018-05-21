@@ -12,9 +12,6 @@ import ARKit
 import SpriteKit
 
 protocol  MapViewDelegate {
-    func getFloorPoints() -> [MapElement]
-    func getWallPoints() -> [MapElement]
-    func getObjectPoints() -> [MapElement]
     func getMapElements(onlyNew: Bool) -> [MapElement]
     func getGridSize() -> Float
     func getCameraLocation() -> SCNVector3?

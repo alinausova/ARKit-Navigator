@@ -10,27 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ARKit-Navigator/Model/Map.swift"
-            timestampString = "548545456.291056"
+            timestampString = "548633590.595611"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "165"
-            endingLineNumber = "165"
-            landmarkName = "addWallToGrid(newElement:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "ARKit-Navigator/Model/Map.swift"
-            timestampString = "548545456.298256"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "397"
-            endingLineNumber = "397"
+            startingLineNumber = "311"
+            endingLineNumber = "311"
             landmarkName = "Map"
             landmarkType = "3">
          </BreakpointContent>
@@ -42,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ARKit-Navigator/Controller/ARViewController.swift"
-            timestampString = "548545456.299462"
+            timestampString = "548633590.5960391"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "279"
-            endingLineNumber = "279"
+            startingLineNumber = "186"
+            endingLineNumber = "186"
             landmarkName = "classifyCurrentImage()"
             landmarkType = "7">
          </BreakpointContent>
@@ -58,7 +42,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ARKit-Navigator/Controller/ARViewController.swift"
-            timestampString = "548545456.2995681"
+            timestampString = "548633590.596104"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "62"
@@ -74,7 +58,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ARKit-Navigator/Controller/ARViewController.swift"
-            timestampString = "548545456.2996351"
+            timestampString = "548633590.596158"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "63"
@@ -90,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ARKit-Navigator/Controller/ARViewController.swift"
-            timestampString = "548545456.299736"
+            timestampString = "548633590.596211"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "288"
-            endingLineNumber = "288"
+            startingLineNumber = "195"
+            endingLineNumber = "195"
             landmarkName = "ARViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -106,11 +90,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ARKit-Navigator/Controller/ARViewController.swift"
-            timestampString = "548545456.2998331"
+            timestampString = "548633590.5962631"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "264"
-            endingLineNumber = "264"
+            startingLineNumber = "171"
+            endingLineNumber = "171"
             landmarkName = "ARViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -122,11 +106,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ARKit-Navigator/Controller/ARViewController.swift"
-            timestampString = "548545456.299895"
+            timestampString = "548633590.596314"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "223"
-            endingLineNumber = "223"
+            startingLineNumber = "130"
+            endingLineNumber = "130"
             landmarkName = "ARViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -138,11 +122,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ARKit-Navigator/Controller/ARViewController.swift"
-            timestampString = "548545456.299971"
+            timestampString = "548633590.596364"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "315"
-            endingLineNumber = "315"
+            startingLineNumber = "222"
+            endingLineNumber = "222"
             landmarkName = "ARViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -154,11 +138,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ARKit-Navigator/Controller/ARViewController.swift"
-            timestampString = "548545456.300045"
+            timestampString = "548633590.596413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "322"
-            endingLineNumber = "322"
+            startingLineNumber = "229"
+            endingLineNumber = "229"
             landmarkName = "displayClassifierResults()"
             landmarkType = "7">
          </BreakpointContent>
@@ -170,12 +154,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ARKit-Navigator/Controller/MapViewController.swift"
-            timestampString = "548545456.300179"
+            timestampString = "548633590.5964659"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "106"
-            endingLineNumber = "106"
+            startingLineNumber = "103"
+            endingLineNumber = "103"
             landmarkName = "updateMap()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ARKit-Navigator/Controller/ARViewController.swift"
+            timestampString = "548633590.596519"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "92"
+            endingLineNumber = "92"
+            landmarkName = "renderer(_:didUpdate:for:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
