@@ -29,7 +29,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     let confidenceThreshold = 15.0
     var mapElements : [ARAnchor] = []
     var isFloorInitialized = false
-    var floorLevel : Float = 100.0
     var currentPositionOfCamera: CGFloat = 0
 
     var map = Map() //Map2D()
@@ -85,6 +84,28 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         node.addChildNode(planeNode)
         map.addElement(newElement: planeAnchor)
 
+        //create a plane of extent size to check how isPointInPolygon works
+
+//        let boundaries = planeAnchor.geometry.boundaryVertices
+//        for i in 1...boundaries.count-1 {
+//            addLine(startPosition: SCNVector3(boundaries[i-1]), endPosition: SCNVector3(boundaries[i]))
+//        }
+//
+//        let w: Int = Int(round (planeAnchor.extent.x / 2 / map.gridSize))
+//        let h: Int = Int(round (planeAnchor.extent.z / 2 / map.gridSize))
+//
+//        for i in -w...w {
+//            for j in -h...h {
+//                let point = vector_float3(map.gridSize * Float(i),
+//                                          0,
+//                                          map.gridSize * Float(j))
+//                if map.isPointInPolygon(boundaries: planeAnchor.geometry.boundaryVertices, point: point) {
+//                    add(x: point.x, y: point.y, z: point.z, color: .purple, size: 0.02)
+//                }
+//            }
+//        }
+//        print (boundaries)
+
     }
 
     // Update planeAnchor in ARView and load it to the map
@@ -94,13 +115,13 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
             let plane = planeNode.geometry as? SCNPlane
             else { return }
 
+
         planeNode.simdPosition = float3(planeAnchor.center.x, 0, planeAnchor.center.z)
 
         plane.width = CGFloat(planeAnchor.extent.x)
         plane.height = CGFloat(planeAnchor.extent.z)
 
         map.addElement(newElement: planeAnchor)
-        if map.floorLevel < self.floorLevel { self.floorLevel = map.floorLevel }
         updateStateLabel()
     }
 
@@ -324,7 +345,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
 
     func updateStateLabel() {
         DispatchQueue.main.async{
-            self.sceneLabel.text = " Floor level: \(self.floorLevel)"
+            self.sceneLabel.text = " Floor level: \(self.map.floorLevel)"
         }
     }
 

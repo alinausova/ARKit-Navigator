@@ -13,7 +13,7 @@ class Map {
 
     var floorLevel : Float = 100
     let floorLevelMistake : Float = 0.5
-    let confidenceThreshold = 30.0
+    let confidenceThreshold = 1.0
     let gridSize : Float = 0.05
 
     var mapGrid = [String : MapElement]()
@@ -133,6 +133,18 @@ class Map {
         }
     }
 
+    func isPointInPolygon(boundaries: [vector_float3], point: vector_float3) -> Bool {
+        var result = false
+        for i in 1...boundaries.count-1 {
+            let p1 = boundaries[i-1]
+            let p2 = boundaries[i]
+            if ((((p1.z <= point.z) && ( point.z < p2.z )) || ((p2.z <= point.z) && ( point.z < p1.z ))) && ( point.x > (p2.x - p1.x) * (point.z - p1.z) / (p2.z - p1.z) + p1.x)) {
+                result = !result
+            }
+        }
+        return result
+    }
+
     func makeXRotationMatrix(angle: Float) -> simd_float3x3 {
         let rows = [
             simd_float3( 1,     0,              0),
@@ -190,9 +202,12 @@ class Map {
 
         for i in -w...w {
             for j in -h...h {
-                plane.append(vector_float3(gridSize * Float(i),
-                                           0,
-                                           gridSize * Float(j)))
+                let point = vector_float3(gridSize * Float(i),
+                                          0,
+                                          gridSize * Float(j))
+                if isPointInPolygon(boundaries: planeAnchor.geometry.boundaryVertices, point: point) {
+                    plane.append(point)
+                }
             }
         }
 
