@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0E028663209A94DD003D166E /* Map2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E028662209A94DD003D166E /* Map2D.swift */; };
+		0E02866B20A089EE003D166E /* Inceptionv3.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 0E02866A20A089EE003D166E /* Inceptionv3.mlmodel */; };
+		0E02867C20A343FB003D166E /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E02867A20A343FB003D166E /* Utilities.swift */; };
+		0E02867D20A343FB003D166E /* StatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E02867B20A343FB003D166E /* StatusViewController.swift */; };
+		0E6F4A7D20B4CA66000CC36C /* AStarPathFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6F4A7C20B4CA66000CC36C /* AStarPathFinder.swift */; };
 		0EB535542098739600D4D0AE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB535532098739600D4D0AE /* AppDelegate.swift */; };
 		0EB535562098739600D4D0AE /* ARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB535552098739600D4D0AE /* ARViewController.swift */; };
 		0EB535592098739600D4D0AE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0EB535572098739600D4D0AE /* Main.storyboard */; };
@@ -15,10 +18,14 @@
 		0EB5355E2098739700D4D0AE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0EB5355C2098739700D4D0AE /* LaunchScreen.storyboard */; };
 		0EB5356620988E6E00D4D0AE /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB5356520988E6E00D4D0AE /* Map.swift */; };
 		0EB5356B2099D3D400D4D0AE /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB5356A2099D3D400D4D0AE /* MapViewController.swift */; };
+		0EE6C4E520B064DD00351A6D /* MapPreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE6C4E420B064DD00351A6D /* MapPreViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0E028662209A94DD003D166E /* Map2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map2D.swift; sourceTree = "<group>"; };
+		0E02866A20A089EE003D166E /* Inceptionv3.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = Inceptionv3.mlmodel; sourceTree = "<group>"; };
+		0E02867A20A343FB003D166E /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		0E02867B20A343FB003D166E /* StatusViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusViewController.swift; sourceTree = "<group>"; };
+		0E6F4A7C20B4CA66000CC36C /* AStarPathFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AStarPathFinder.swift; sourceTree = "<group>"; };
 		0EB535502098739600D4D0AE /* ARKit-Navigator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ARKit-Navigator.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EB535532098739600D4D0AE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0EB535552098739600D4D0AE /* ARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewController.swift; sourceTree = "<group>"; };
@@ -28,6 +35,7 @@
 		0EB5355F2098739700D4D0AE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0EB5356520988E6E00D4D0AE /* Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
 		0EB5356A2099D3D400D4D0AE /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		0EE6C4E420B064DD00351A6D /* MapPreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPreViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +49,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0E02866920A0896B003D166E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0E02866A20A089EE003D166E /* Inceptionv3.mlmodel */,
+				0EB5355A2098739700D4D0AE /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		0E02867920A343FB003D166E /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				0E02867A20A343FB003D166E /* Utilities.swift */,
+				0E02867B20A343FB003D166E /* StatusViewController.swift */,
+				0E6F4A7C20B4CA66000CC36C /* AStarPathFinder.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
 		0EB535472098739600D4D0AE = {
 			isa = PBXGroup;
 			children = (
@@ -60,12 +87,13 @@
 		0EB535522098739600D4D0AE /* ARKit-Navigator */ = {
 			isa = PBXGroup;
 			children = (
+				0E02867920A343FB003D166E /* Support */,
 				0EB535532098739600D4D0AE /* AppDelegate.swift */,
-				0EB5356720988E8E00D4D0AE /* Model */,
-				0EB5356820988E9C00D4D0AE /* Controller */,
-				0EB5356920988EAB00D4D0AE /* View */,
-				0EB5355A2098739700D4D0AE /* Assets.xcassets */,
 				0EB5355F2098739700D4D0AE /* Info.plist */,
+				0E02866920A0896B003D166E /* Resources */,
+				0EB5356720988E8E00D4D0AE /* Model */,
+				0EB5356920988EAB00D4D0AE /* View */,
+				0EB5356820988E9C00D4D0AE /* Controller */,
 			);
 			path = "ARKit-Navigator";
 			sourceTree = "<group>";
@@ -74,7 +102,6 @@
 			isa = PBXGroup;
 			children = (
 				0EB5356520988E6E00D4D0AE /* Map.swift */,
-				0E028662209A94DD003D166E /* Map2D.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -84,6 +111,7 @@
 			children = (
 				0EB535552098739600D4D0AE /* ARViewController.swift */,
 				0EB5356A2099D3D400D4D0AE /* MapViewController.swift */,
+				0EE6C4E420B064DD00351A6D /* MapPreViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -168,10 +196,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E02867D20A343FB003D166E /* StatusViewController.swift in Sources */,
+				0EE6C4E520B064DD00351A6D /* MapPreViewController.swift in Sources */,
 				0EB535562098739600D4D0AE /* ARViewController.swift in Sources */,
-				0E028663209A94DD003D166E /* Map2D.swift in Sources */,
+				0E02866B20A089EE003D166E /* Inceptionv3.mlmodel in Sources */,
+				0E02867C20A343FB003D166E /* Utilities.swift in Sources */,
 				0EB5356620988E6E00D4D0AE /* Map.swift in Sources */,
 				0EB535542098739600D4D0AE /* AppDelegate.swift in Sources */,
+				0E6F4A7D20B4CA66000CC36C /* AStarPathFinder.swift in Sources */,
 				0EB5356B2099D3D400D4D0AE /* MapViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
