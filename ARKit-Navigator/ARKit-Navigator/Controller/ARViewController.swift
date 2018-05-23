@@ -16,7 +16,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     // MARK: - IBOutlets
 
     @IBOutlet weak var sceneView: ARSCNView!
-    @IBOutlet weak var sceneLabel: UILabel!
     @IBOutlet weak var mapPreView: UIView!
     @IBOutlet weak var mapPreviewButton: UIButton!
 
@@ -122,7 +121,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         plane.height = CGFloat(planeAnchor.extent.z)
 
         map.addElement(newElement: planeAnchor)
-        updateStateLabel()
     }
 
     // Remove planeAnchor from ARView
@@ -256,7 +254,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
                 //sceneView.session.add(anchor: anchor)
 
                 // Add an object to the map
-                map.addObjectToGrid(newElement: anchor)
+                map.addObjectToGrid(newElement: anchor, name: self.identifierString)
             }
         }
     }
@@ -343,12 +341,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         present(alertController, animated: true, completion: nil)
     }
 
-    func updateStateLabel() {
-        DispatchQueue.main.async{
-            self.sceneLabel.text = " Floor level: \(self.map.floorLevel)"
-        }
-    }
-
     func addLine(startPosition: SCNVector3, endPosition: SCNVector3) {
         let line = SCNGeometry.line(from: startPosition, to: endPosition)
         let lineNode = SCNNode(geometry: line)
@@ -365,6 +357,16 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         node.name = "map"
         self.sceneView.scene.rootNode.addChildNode(node)
     }
+
+    func add(position: SCNVector3, color: UIColor, size: CGFloat) {
+        let node = SCNNode()
+        node.geometry = SCNBox(width: size, height: size, length: size, chamferRadius: size)
+        node.geometry?.firstMaterial?.diffuse.contents = color
+        node.position = position
+        node.name = "map"
+        self.sceneView.scene.rootNode.addChildNode(node)
+    }
+
 
     func clear() {
         for node in self.sceneView.scene.rootNode.childNodes {
@@ -398,6 +400,28 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         clear()
         //map.fillFloor()
         refresh()
+    }
+    
+    @IBAction func findPath(_ sender: Any) {
+        if let current = currentLocation {
+            map.mockPlaneForTesting(loc: vector_float3(current))
+            let path = getPathToObject(objectName: "Granny Smith")
+            for point in path {
+                add(position: SCNVector3(point.x, current.y, point.z), color: .blue, size: 0.02)
+            }
+        }
+    }
+
+    func getPathToObject (objectName: String) -> [vector_float3] {
+        if let mapElement = map.getObject(objectName: objectName),
+            let start = currentLocation {
+            let pathBuilder = AStarPathFinder()
+            return pathBuilder.findPath(from: vector_float3(round(start.x / map.gridSize) * map.gridSize,
+                                                            map.floorLevel,
+                                                            round(start.y / map.gridSize) * map.gridSize),
+                                        to: vector_float3(mapElement.x, map.floorLevel, mapElement.z), map: map)
+        }
+        return []
     }
 
     // MARK: - Map View delegate functions
