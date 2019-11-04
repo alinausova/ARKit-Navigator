@@ -157,6 +157,7 @@
 				TargetAttributes = {
 					0EB5354F2098739600D4D0AE = {
 						CreatedOnToolsVersion = 9.4;
+						LastSwiftMigration = 1120;
 					};
 				};
 			};
@@ -357,7 +358,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "alinausova.ARKit-Navigator";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -375,7 +376,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "alinausova.ARKit-Navigator";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;

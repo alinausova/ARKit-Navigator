@@ -21,7 +21,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
 
     // Controller for tracking state and recognition result representation
     private lazy var statusViewController: StatusViewController = {
-        return childViewControllers.lazy.compactMap({ $0 as? StatusViewController }).first!
+        return children.lazy.compactMap({ $0 as? StatusViewController }).first!
     }()
     
     let configuration = ARWorldTrackingConfiguration()
