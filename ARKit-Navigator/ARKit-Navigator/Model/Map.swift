@@ -13,8 +13,9 @@ class Map {
 
     var floorLevel : Float = 100
     let floorLevelMistake : Float = 0.5
-    let confidenceThreshold = 1.0
+    let confidenceThreshold = 15.0
     let gridSize : Float = 0.05
+    var path: [vector_float3] = []
 
     var mapGrid = [String : MapElement]()
 
@@ -30,10 +31,12 @@ class Map {
         addMapElementToGrid(newMapElement: coorCenterZ2)
     }
 
+    /// Set the floor level
     func setFloor(floorLevel: Float) {
         self.floorLevel = round(floorLevel / gridSize) * gridSize
     }
 
+    /// Check if a level belongs to the floor range
     func isFloor(planeLevel: Float) -> Bool {
         if planeLevel - floorLevel < floorLevelMistake {
             return true
@@ -42,6 +45,7 @@ class Map {
         }
     }
 
+    /// Process new ARPlaneAnchor data
     func addElement(newElement: ARPlaneAnchor) {
         if newElement.alignment == .horizontal {
             addHorisontalPlane(newElement: newElement)
@@ -51,11 +55,17 @@ class Map {
         }
     }
 
+    /// Change current path
+    func addPath(path: [vector_float3]){
+        self.path = path
+    }
+
+    /// Process horisontal plane
     func addHorisontalPlane(newElement: ARPlaneAnchor) {
         if isFloor(planeLevel: newElement.transform.columns.3.y) {
         for element in translatePlane(planeAnchor: newElement) {
                 let newMapElement = MapElement (x: round(element.x / gridSize) * gridSize,
-                                                y: floorLevel, //round(element.y / gridSize) * gridSize,
+                                                y: floorLevel,
                                                 z: round(element.z / gridSize) * gridSize,
                                                 content: .floor,
                                                 confidence: 1)
@@ -71,75 +81,23 @@ class Map {
                 addMapElementToGrid(newMapElement: newMapElement)
             }
         }
-//        for point1 in newFloorPoints {
-//            for point2 in newFloorPoints{
-//                if point1.x == point2.x && point1.z < point2.z {
-//                    var i = point1.z + gridSize
-//                    while (i < point2.z) {
-//                        let newPoint = MapElement(x: point1.x, y: point1.y, z: i)
-//                        newPoint.content = .floor
-//                        addMapElementToGrid(newMapElement: newPoint)
-//                        i += gridSize
-//                    }
-//                } else if point1.x < point2.x && point1.z == point2.z {
-//                    var i = point1.x + gridSize
-//                    while (i < point2.x) {
-//                        let newPoint = MapElement(x: i, y: point1.y, z: point1.z)
-//                        newPoint.content = .floor
-//                        addMapElementToGrid(newMapElement: newPoint)
-//                        i += gridSize
-//                    }
-//                }
-//            }
-//        }
     }
 
-    func mockPlaneForTesting(loc: vector_float3) {
-        let current = vector_float3( round(loc.x / gridSize) * gridSize,
-                                     floorLevel,
-                                     round(loc.z / gridSize) * gridSize)
-        for i in -20...20 {
-            for j in -20...20 {
-                if i == 15 && i == j {
-                    let newMapElement = MapElement (x: current.x + Float(i) * gridSize,
-                                                    y: floorLevel,
-                                                    z: current.z + Float(j) * gridSize,
-                                                    content: .object,
-                                                    confidence: 100,
-                                                    name: "Granny Smith")
-                    addMapElementToGrid(newMapElement: newMapElement)
-                } else if (i == 8 && j < 10 && j > -15) || (j == 8 && i < 10 && i > -15) || (j == -8 && i < 10 && i > -15) || (i == -8 && j < 15 && j > -5) {
-                    let newMapElement = MapElement (x: current.x + Float(i) * gridSize,
-                                                    y: floorLevel,
-                                                    z: current.z + Float(j) * gridSize,
-                                                    content: .wall,
-                                                    confidence: 100)
-                    addMapElementToGrid(newMapElement: newMapElement)
-                } else {
-                    let newMapElement = MapElement (x: current.x + Float(i) * gridSize,
-                                                y: floorLevel,
-                                                z: current.z + Float(j) * gridSize,
-                                                content: .floor,
-                                                confidence: 100)
-                    addMapElementToGrid(newMapElement: newMapElement)
-                }
-            }
-        }
-    }
-
+    /// Process vertical plane
     func addVerticalPlane(newElement: ARPlaneAnchor) {
         var newWallPoints : [MapElement] = []
         for element in translatePlane(planeAnchor: newElement) {
             let newMapElement = MapElement (x: round(element.x / gridSize) * gridSize,
-                                            y: floorLevel, //round(element.y / gridSize) * gridSize,
+                                            y: floorLevel,
                                             z: round(element.z / gridSize) * gridSize,
                                             content: .wall,
-                                            confidence: 1)
+                                            confidence: 30)
             addMapElementToGrid(newMapElement: newMapElement)
             newWallPoints.append(newMapElement)
         }
     }
 
+    /// Add object to the map grid
     func addObjectToGrid(newElement: ARAnchor, name: String) {
         let newMapElement = MapElement(x: round((newElement.transform.columns.3.x) / gridSize) * gridSize,
                                          y: floorLevel,
@@ -150,6 +108,7 @@ class Map {
         addMapElementToGrid(newMapElement: newMapElement)
     }
 
+    /// Add a new element to grid
     func addMapElementToGrid(newMapElement: MapElement) {
         let newKey = createKey(mapElement: newMapElement)
         if let old = mapGrid[newKey]{
@@ -163,6 +122,7 @@ class Map {
         }
     }
 
+    /// Check if a point belongs to the polygon
     func isPointInPolygon(boundaries: [vector_float3], point: vector_float3) -> Bool {
         var result = false
         for i in 0...boundaries.count-1 {
@@ -180,6 +140,7 @@ class Map {
         return result
     }
 
+    /// Make rotation matrix for X axis, angle is in radians
     func makeXRotationMatrix(angle: Float) -> simd_float3x3 {
         let rows = [
             simd_float3( 1,     0,              0),
@@ -190,6 +151,7 @@ class Map {
         return float3x3(rows: rows)
     }
 
+    /// Make rotation matrix for Y axis, angle is in radians
     func makeYRotationMatrix(angle: Float) -> simd_float3x3 {
         let rows = [
             simd_float3( cos(angle),  0,    sin(angle)),
@@ -200,24 +162,10 @@ class Map {
         return float3x3(rows: rows)
     }
 
-//  doesnt work
-//    func getPlaneRoll(transform: SCNMatrix4) -> Float{
-//         let yaw: Float
-//         if (transform.m11 == 1.0)
-//         {
-//             yaw = atan2f(transform.m13, transform.m34);
-//         } else if (transform.m11 == -1.0) {
-//             yaw = atan2f(transform.m13, transform.m34);
-//         } else {
-//             yaw = atan2(-transform.m31, transform.m11);
-//         }
-//        return yaw
-//    }
-
+    /// Rotate and translate all points belong to the plane
     func translatePlane(planeAnchor: ARPlaneAnchor) -> [simd_float3] {
         var result: [simd_float3] = []
 
- //       planeAnchor.center
         let string = planeAnchor.description
         let end = string.components(separatedBy: CharacterSet(charactersIn : "()"))[3].components(separatedBy: "°")
 
@@ -227,9 +175,9 @@ class Map {
             return  result
         }
 
-        let center = simd_float3(x: planeAnchor.transform.columns.3.x, //+ planeAnchor.center.x,
-                                 y: planeAnchor.transform.columns.3.y, //+ planeAnchor.center.y,
-                                 z: planeAnchor.transform.columns.3.z) //+ planeAnchor.center.z)
+        let center = simd_float3(x: planeAnchor.transform.columns.3.x,
+                                 y: planeAnchor.transform.columns.3.y,
+                                 z: planeAnchor.transform.columns.3.z)
 
         let xRotationMatrix = makeXRotationMatrix(angle: GLKMathDegreesToRadians(90))
         let yRotationMatrix = makeYRotationMatrix(angle: GLKMathDegreesToRadians(-y))
@@ -269,117 +217,53 @@ class Map {
         return result
     }
 
-    //another transform method
-
-//    func getCos(from: Float) -> Float {
-//        return cos( (from) * .pi / 180)
-//    }
-//
-//    func getSin(from: Float) -> Float {
-//        return sin( (from) * .pi / 180)
-//    }
-//
-//    func getCosSinVectors(planeAnchor: ARPlaneAnchor) -> [simd_float3] {
-//        let string = planeAnchor.description
-//        let end = string.components(separatedBy: CharacterSet(charactersIn : "()"))[3].components(separatedBy: "°")
-//
-//        print ("\(end)")
-//        let x = Float(end[0].trimmingCharacters(in: CharacterSet(charactersIn: " ")))!
-//        let y = Float(end[1].trimmingCharacters(in: CharacterSet(charactersIn: " ")))!
-//        let z = Float(end[2].trimmingCharacters(in: CharacterSet(charactersIn: " ")))!
-//
-//        return [simd_float3(x: getCos(from: -x), y: getCos(from:  -y - z), z: getCos(from:  -z)),
-//                simd_float3(x: getSin(from:  -x), y: getSin(from:  -y - z), z: getSin(from:  -z))]
-//    }
-    //    func transform(planeAnchor: ARPlaneAnchor) -> [simd_float3] {
-    //        var result: [simd_float3] = []
-    //        let aVector = getCosSinVectors(planeAnchor: planeAnchor)
-    //        let center = simd_float3(x: planeAnchor.transform.columns.3.x + planeAnchor.center.x,
-    //                                 y: planeAnchor.transform.columns.3.y + planeAnchor.center.y,
-    //                                 z: planeAnchor.transform.columns.3.z + planeAnchor.center.z)
-    //
-    //        if planeAnchor.alignment == .vertical {
-    //            for point in planeAnchor.geometry.boundaryVertices {
-    //                let y2 = point.y * 0 - point.z * 1
-    //                let z1 = point.y * 1 + point.z * 0
-    //                let x2 = point.x * aVector[0].y - z1 * aVector[1].y
-    //                let z2 = point.x * aVector[1].y + z1 * aVector[0].y
-    //                result.append(simd_float3(x: x2 + center.x, y: y2 + center.y, z: z2 + center.z))
-    //            }
-    //        } else {
-    //            for point in planeAnchor.geometry.boundaryVertices {
-    //                let x2 = point.x * aVector[0].y - point.z * aVector[1].y
-    //                let z2 = point.x * aVector[1].y + point.z * aVector[0].y
-    //                let y2 = point.y
-    //                result.append(simd_float3(x: x2 + center.x, y: y2 + center.y, z: z2 + center.z))
-    //            }
-    //        }
-    //        return result
-    //    }
-
+    /// Create a key for mapGrid dictionary from a vector
     func createKey (mapElement: MapElement) -> String {
         return "\(mapElement.x):\(mapElement.y):\(mapElement.z)"
     }
 
-//    func createCenterKey (mapElement: MapElement) -> String {
-//        return "\(mapElement.x + gridSize):\(mapElement.y):\(mapElement.z + gridSize)"
-//    }
-
-//    func createNeighborKeys (mapElement: MapElement) -> [String] {
-//        var newKeys : [String] = []
-//        newKeys.append("\(mapElement.x + gridSize):\(mapElement.y):\(mapElement.z)")
-//        newKeys.append("\(mapElement.x + gridSize):\(mapElement.y):\(mapElement.z + gridSize)")
-//        newKeys.append("\(mapElement.x + gridSize):\(mapElement.y):\(mapElement.z - gridSize)")
-//        newKeys.append("\(mapElement.x):\(mapElement.y):\(mapElement.z + gridSize)")
-//        newKeys.append("\(mapElement.x):\(mapElement.y):\(mapElement.z - gridSize)")
-//        newKeys.append("\(mapElement.x - gridSize):\(mapElement.y):\(mapElement.z)")
-//        newKeys.append("\(mapElement.x - gridSize):\(mapElement.y):\(mapElement.z + gridSize)")
-//        newKeys.append("\(mapElement.x - gridSize):\(mapElement.y):\(mapElement.z - gridSize)")
-//        return newKeys
-//    }
-
+    /// Get distance between two map elements
     func getDistance(a: MapElement, b: MapElement) -> Float {
         var distance : Float
         distance = sqrt(pow((a.x - b.x),2) + pow((a.y - b.y),2) + pow((a.z - b.z),2))
         return distance
     }
 
-//    func fillFloor() {
-//        var loopCNT : Int = 0
-//        repeat {
-//
-//            for element in mapGrid.values {
-//                let centersKeys : [String] = createNeighborKeys(mapElement: element)
-//                for centerKey in centersKeys {
-//                    if mapGrid[centerKey] == nil {
-//                        let newMapElement = MapElement(x: element.x + gridSize,
-//                                                       y: element.y,
-//                                                       z: element.z + gridSize)
-//                        let filledNeighbours = countFilledNeighbours(center: newMapElement)
-//                        if filledNeighbours > 3 {
-//                            newMapElement.content = .floor
-//                            addMapElementToGrid(newMapElement: newMapElement)
-//
-//                        }
-//                    }
-//                }
-//            }
-//            loopCNT += 1
-//        } while loopCNT < 5
-//    }
-//
-//    func countFilledNeighbours(center: MapElement) -> Int {
-//        var cnt = 0
-//        let keys = createNeighborKeys(mapElement: center)
-//        for key in keys {
-//            if let oldPoint = mapGrid[key],
-//                oldPoint.content == .floor {
-//                cnt += 1
-//            }
-//        }
-//        return cnt
-//    }
+    /// Mock map elements for path finder demonstration
+    func mockPlaneForTesting(loc: vector_float3) {
+        let current = vector_float3( round(loc.x / gridSize) * gridSize,
+                                     floorLevel,
+                                     round(loc.z / gridSize) * gridSize)
+        for i in -20...20 {
+            for j in -20...20 {
+                if i == 15 && i == j {
+                    let newMapElement = MapElement (x: current.x + Float(i) * gridSize,
+                                                    y: floorLevel,
+                                                    z: current.z + Float(j) * gridSize,
+                                                    content: .object,
+                                                    confidence: 100,
+                                                    name: "Granny Smith")
+                    addMapElementToGrid(newMapElement: newMapElement)
+                } else if (i == 8 && j < 10 && j > -15) || (j == 8 && i < 10 && i > -15) || (j == -8 && i < 10 && i > -15) || (i == -8 && j < 15 && j > -5) {
+                    let newMapElement = MapElement (x: current.x + Float(i) * gridSize,
+                                                    y: floorLevel,
+                                                    z: current.z + Float(j) * gridSize,
+                                                    content: .wall,
+                                                    confidence: 100)
+                    addMapElementToGrid(newMapElement: newMapElement)
+                } else {
+                    let newMapElement = MapElement (x: current.x + Float(i) * gridSize,
+                                                    y: floorLevel,
+                                                    z: current.z + Float(j) * gridSize,
+                                                    content: .floor,
+                                                    confidence: 100)
+                    addMapElementToGrid(newMapElement: newMapElement)
+                }
+            }
+        }
+    }
 
+    /// Get only new or all map elements
     func getMap(onlyNew: Bool) -> [MapElement] {
         var result : [MapElement] = []
         if onlyNew {
@@ -400,6 +284,7 @@ class Map {
         return result
     }
 
+    /// Get an object from the map by its name
     func getObject(objectName: String) -> MapElement? {
         for mapEl in mapGrid.values {
             if mapEl.content == .object,
@@ -408,6 +293,37 @@ class Map {
             }
         }
         return nil
+    }
+
+    /// Get only new or all floor map elements
+    func getFloor(only new: Bool) -> [MapElement] {
+        var result: [MapElement] = []
+        if new {
+            for mapEl in mapGrid.values {
+                if mapEl.content == .floor && mapEl.isNew
+                {
+                    result.append(mapEl)
+                }
+            }
+        } else {
+            for mapEl in mapGrid.values {
+                if mapEl.content == .floor
+                {
+                    result.append(mapEl)
+                }
+            }
+        }
+        return result
+    }
+
+    /// Change status of new map elements when enviroment research cycle step is complete
+    func toOld() {
+        for mapEl in mapGrid.values {
+            if mapEl.isNew
+            {
+                mapEl.isNew = false
+            }
+        }
     }
 }
 
@@ -418,20 +334,8 @@ class MapElement {
     var confidence = 0.0
     var content = MapContent.notDefined
     var loadedInMap = false
+    var isNew = true
     var name: String = ""
-
-    init(x: Float, y: Float, z: Float) {
-        self.x = x
-        self.y = y
-        self.z = z
-    }
-
-    init(x: Float, y: Float, z: Float, content: MapContent) {
-        self.x = x
-        self.y = y
-        self.z = z
-        self.content = content
-    }
 
     init(x: Float, y: Float, z: Float, content: MapContent, confidence: Double) {
         self.x = x
@@ -448,10 +352,6 @@ class MapElement {
         self.content = content
         self.confidence = confidence
         self.name = name
-    }
-
-    func changeContent(content type: MapContent) {
-        self.content = type
     }
 
     func getElementColor() -> UIColor {

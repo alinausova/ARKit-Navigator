@@ -2,7 +2,7 @@
 //  AStarPathFinder.swift
 //  ARKit-Navigator
 //
-//  Created by Alina Usova on 23/05/2018.
+//  Created by Alina Usova on 20/05/2018.
 //  Copyright © 2018 alinausova. All rights reserved.
 //
 
@@ -12,10 +12,10 @@ import ARKit
 
 class AStarPathFinder {
 
+    // Find path to object on the map
     func findPath(from: simd_float3, to: simd_float3, map: Map) -> [vector_float3] {
         let start_node = Node(position: from, parent: nil)
         start_node.getHeuristic(to: to)
-        let end_node = Node(position: to, parent: nil)
 
         var openList: [Node] = []
         var closedList: [Node] = []
@@ -38,7 +38,7 @@ class AStarPathFinder {
                 var path: [vector_float3] = []
                 var current: Node? = currentNode
                 while current != nil {
-                    print(current?.f)
+                    print("\(String(describing: current?.f))")
                     path.append((current?.position)!)
                     current = current?.parent
                 }
@@ -46,7 +46,6 @@ class AStarPathFinder {
                 return path
             }
 
-            //print (getChildren(parent: currentNode, map: map).count)
             for child in getChildren(parent: currentNode, map: map) {
                 var isClosed = false
                 for closedChild in closedList {
@@ -78,6 +77,7 @@ class AStarPathFinder {
         return []
     }
 
+    // Get array of free to move nodes
     func getChildren(parent: Node, map: Map) -> [Node] {
         var children: [Node] = []
         for key in createNeighborKeys(node: parent, gridSize: map.gridSize) {
@@ -91,6 +91,7 @@ class AStarPathFinder {
         return children
     }
 
+    // Get keys to dictionary for
     func createNeighborKeys (node: Node, gridSize: Float) -> [String] {
         var newKeys : [String] = []
         newKeys.append("\(node.position.x + gridSize):\(node.position.y):\(node.position.z)")
@@ -102,6 +103,26 @@ class AStarPathFinder {
         newKeys.append("\(node.position.x - gridSize):\(node.position.y):\(node.position.z + gridSize)")
         newKeys.append("\(node.position.x - gridSize):\(node.position.y):\(node.position.z - gridSize)")
         return newKeys
+    }
+
+    // Get the furthest point on the map from new ones
+    func getFurthestPoint (start: vector_float3, map: Map) -> vector_float3 {
+        let floorPoints = map.getFloor(only: true)
+        var maxDistance: Float = 0
+        var result = start
+        for point in floorPoints {
+            let newDistance = getDistance(v1: start, v2: vector_float3(point.x, point.y, point.z))
+            if maxDistance < newDistance {
+                maxDistance = newDistance
+                result = vector_float3(point.x, point.y, point.z)
+            }
+        }
+        return result
+    }
+
+    //Get distance between two points on the map
+    func getDistance(v1: vector_float3, v2: vector_float3) -> Float {
+        return Float(sqrt(pow((v1.x - v2.x),2) + pow((v1.y - v2.y),2) + pow((v1.z - v2.z),2)))
     }
 
 }
@@ -118,6 +139,7 @@ class Node {
         self.parent = parent
     }
 
+    //Heuristic function is the distance between points
     func getHeuristic(to: vector_float3) {
         self.h = Float(sqrt(pow((position.x - to.x),2) + pow((position.y - to.y),2) + pow((position.z - to.z),2)))
     }

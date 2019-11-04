@@ -16,6 +16,8 @@ protocol  MapViewDelegate {
     func getGridSize() -> Float
     func getCameraLocation() -> SCNVector3?
     func getCurrentPositionOfCamera() -> CGFloat
+    func isPathUpdateNeeded() -> Bool
+    func getNewPath() -> [vector_float3] 
 }
 
 class MapViewController: UIViewController {
@@ -23,7 +25,6 @@ class MapViewController: UIViewController {
     @IBOutlet weak var mapSKView: SKView!
 
     var delegate: MapViewDelegate?
-
     let scene = SKScene(size: CGSize(width: 2048, height: 2048))
 
     var mapTimer: Timer?
@@ -44,6 +45,7 @@ class MapViewController: UIViewController {
         if let mapElements = delegate?.getMapElements(onlyNew: false),
             let gridSize = delegate?.getGridSize() {
             let scaledGridSize = CGFloat(gridSize * 100)
+            // Show existing elements
             for element in mapElements {
                 let newNode = SKShapeNode(rectOf: CGSize(width: CGFloat(scaledGridSize), height: CGFloat(scaledGridSize)))
                 newNode.position = CGPoint(x: Double(element.x) * 100 , y: -Double(element.z) * 100)
@@ -87,6 +89,7 @@ class MapViewController: UIViewController {
 
         scene.addChild(backNode)
         mapSKView.presentScene(scene)
+        // Set the timer for veiw update
         mapTimer = Timer.scheduledTimer(withTimeInterval: mapRefreshRate, repeats: true, block: {_ in
             self.updateMap()
         })
@@ -99,7 +102,6 @@ class MapViewController: UIViewController {
     func updateMap() {
         if let currentOrientation = delegate?.getCurrentPositionOfCamera(),
             let currentPosition = delegate?.getCameraLocation() {
-//            self.scene.childNode(withName: "backNode")?.zRotation = CGFloat(currentOrientation.x)
             self.scene.childNode(withName: "backNode")?.childNode(withName: "round")?.position =
             CGPoint (x: CGFloat(currentPosition.x * 100), y: -CGFloat(currentPosition.z * 100))
             self.scene.childNode(withName: "backNode")?.childNode(withName: "round")?.zRotation = CGFloat(currentOrientation)
