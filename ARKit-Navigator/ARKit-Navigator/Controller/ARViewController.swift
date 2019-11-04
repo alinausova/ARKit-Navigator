@@ -19,9 +19,9 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     @IBOutlet weak var mapPreView: UIView!
     @IBOutlet weak var mapPreviewButton: UIButton!
 
-
+    // Controller for tracking state and recognition result representation
     private lazy var statusViewController: StatusViewController = {
-        return childViewControllers.lazy.flatMap({ $0 as? StatusViewController }).first!
+        return childViewControllers.lazy.compactMap({ $0 as? StatusViewController }).first!
     }()
     
     let configuration = ARWorldTrackingConfiguration()
@@ -29,12 +29,10 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     var mapElements : [ARAnchor] = []
     var isFloorInitialized = false
     var currentPositionOfCamera: CGFloat = 0
+    var needPathUpdate = false
+    let pathBuilder = AStarPathFinder()
 
-    var map = Map() //Map2D()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
+    var map = Map()
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -50,11 +48,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
 
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
+    // Prepare for view transition
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nav = segue.destination as? MapViewController {
             nav.delegate = self
@@ -82,29 +76,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
 
         node.addChildNode(planeNode)
         map.addElement(newElement: planeAnchor)
-
-        //create a plane of extent size to check how isPointInPolygon works
-
-//        let boundaries = planeAnchor.geometry.boundaryVertices
-//        for i in 1...boundaries.count-1 {
-//            addLine(startPosition: SCNVector3(boundaries[i-1]), endPosition: SCNVector3(boundaries[i]))
-//        }
-//
-//        let w: Int = Int(round (planeAnchor.extent.x / 2 / map.gridSize))
-//        let h: Int = Int(round (planeAnchor.extent.z / 2 / map.gridSize))
-//
-//        for i in -w...w {
-//            for j in -h...h {
-//                let point = vector_float3(map.gridSize * Float(i),
-//                                          0,
-//                                          map.gridSize * Float(j))
-//                if map.isPointInPolygon(boundaries: planeAnchor.geometry.boundaryVertices, point: point) {
-//                    add(x: point.x, y: point.y, z: point.z, color: .purple, size: 0.02)
-//                }
-//            }
-//        }
-//        print (boundaries)
-
     }
 
     // Update planeAnchor in ARView and load it to the map
@@ -113,7 +84,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
             let planeNode = node.childNodes.first,
             let plane = planeNode.geometry as? SCNPlane
             else { return }
-
 
         planeNode.simdPosition = float3(planeAnchor.center.x, 0, planeAnchor.center.z)
 
@@ -146,14 +116,10 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     // MARK: - ARSessionDelegate
 
     // Pass camera frames received from ARKit to Vision (when not already processing one)
-    /// - Tag: ConsumeARFrames
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        // Do not enqueue other buffers for processing while another Vision task is still running.
-        // The camera stream has only a finite amount of buffers available; holding too many buffers for analysis would starve the camera.
         guard currentBuffer == nil, case .normal = frame.camera.trackingState else {
             return
         }
-
         // Retain the image buffer for Vision processing.
         self.currentBuffer = frame.capturedImage
         classifyCurrentImage()
@@ -162,7 +128,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     // MARK: - Vision classification
 
     // Vision classification request and model
-    /// - Tag: ClassificationRequest
     private lazy var classificationRequest: VNCoreMLRequest = {
         do {
             // Instantiate the model from its generated Swift class.
@@ -192,11 +157,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     private let visionQueue = DispatchQueue(label: "com.example.apple-samplecode.ARKitVision.serialVisionQueue")
 
     // Run the Vision+ML classifier on the current image buffer.
-    /// - Tag: ClassifyCurrentImage
     private func classifyCurrentImage() {
-        // Most computer vision tasks are not rotation agnostic so it is important to pass in the orientation of the image with respect to device.
         let orientation = CGImagePropertyOrientation(UIDevice.current.orientation)
-
         let requestHandler = VNImageRequestHandler(cvPixelBuffer: currentBuffer!, orientation: orientation)
         visionQueue.async {
             do {
@@ -214,16 +176,14 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     private var confidence: VNConfidence = 0.0
 
     // Handle completion of the Vision request and choose results to display.
-    /// - Tag: ProcessClassifications
     func processClassifications(for request: VNRequest, error: Error?) {
         guard let results = request.results else {
             print("Unable to classify image.\n\(error!.localizedDescription)")
             return
         }
-        // The `results` will always be `VNClassificationObservation`s, as specified by the Core ML model in this project.
         let classifications = results as! [VNClassificationObservation]
 
-        // Show a label for the highest-confidence result (but only above a minimum confidence threshold).
+        // Show a label for the highest-confidence result (but only above a minimum confidence threshold)
         if let bestResult = classifications.first(where: { result in result.confidence > 0.5 }),
             let label = bestResult.identifier.split(separator: ",").first {
             identifierString = String(label)
@@ -251,8 +211,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
             if let result = center.first {
                 // Add a new anchor location.
                 let anchor = ARAnchor(transform: result.worldTransform)
-                //sceneView.session.add(anchor: anchor)
-
                 // Add an object to the map
                 map.addObjectToGrid(newElement: anchor, name: self.identifierString)
             }
@@ -269,7 +227,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
             statusViewController.escalateFeedback(for: camera.trackingState, inSeconds: 3.0)
         case .normal:
             statusViewController.cancelScheduledMessage(for: .trackingStateEscalation)
-            // Unhide content after successful relocalization.
             setOverlaysHidden(false)
         }
         self.currentOrientation = camera.eulerAngles
@@ -285,7 +242,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
             errorWithInfo.localizedRecoverySuggestion
         ]
 
-        // Filter out optional error messages.
         let errorMessage = messages.compactMap({ $0 }).joined(separator: "\n")
         DispatchQueue.main.async {
             self.displayErrorMessage(title: "The AR session failed.", message: errorMessage)
@@ -297,12 +253,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     }
 
     func sessionShouldAttemptRelocalization(_ session: ARSession) -> Bool {
-        /*
-         Allow the session to attempt to resume after an interruption.
-         This process may not succeed, so the app must be prepared
-         to reset the session if the relocalizing status continues
-         for a long time -- see `escalateFeedback` in `StatusViewController`.
-         */
         return true
     }
 
@@ -322,7 +272,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         statusViewController.cancelAllScheduledMessages()
         statusViewController.showMessage("RESTARTING SESSION")
 
-        map = Map() //Map2D()
+        map = Map()
 
         let configuration = ARWorldTrackingConfiguration()
         sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
@@ -341,6 +291,9 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         present(alertController, animated: true, completion: nil)
     }
 
+    // MARK: - Add virtual elements to the view
+
+    /// Add line connecting two points
     func addLine(startPosition: SCNVector3, endPosition: SCNVector3) {
         let line = SCNGeometry.line(from: startPosition, to: endPosition)
         let lineNode = SCNNode(geometry: line)
@@ -349,6 +302,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
 
     }
 
+    /// Add an SCNNode for map element representation
     func add(x: Float, y: Float, z: Float, color: UIColor, size: CGFloat) {
         let node = SCNNode()
         node.geometry = SCNBox(width: size, height: size, length: size, chamferRadius: size)
@@ -358,16 +312,18 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         self.sceneView.scene.rootNode.addChildNode(node)
     }
 
-    func add(position: SCNVector3, color: UIColor, size: CGFloat) {
+    /// Add an SCNNode for path element representation
+    func add(position: SCNVector3) {
         let node = SCNNode()
+        let size: CGFloat = 0.02
         node.geometry = SCNBox(width: size, height: size, length: size, chamferRadius: size)
-        node.geometry?.firstMaterial?.diffuse.contents = color
+        node.geometry?.firstMaterial?.diffuse.contents = UIColor.red
         node.position = position
-        node.name = "map"
+        node.name = "path"
         self.sceneView.scene.rootNode.addChildNode(node)
     }
 
-
+    /// Clear ARScene
     func clear() {
         for node in self.sceneView.scene.rootNode.childNodes {
             if node.name == "map" {
@@ -376,6 +332,16 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         }
     }
 
+    /// Remove path elements
+    func clearPath() {
+        for node in self.sceneView.scene.rootNode.childNodes {
+            if node.name == "path" {
+                node.removeFromParentNode()
+            }
+        }
+    }
+
+    /// Refresh AR map elements visualization
     func refresh() {
         for element in map.mapGrid.values {
             if element.confidence > confidenceThreshold {
@@ -402,24 +368,57 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         refresh()
     }
     
-    @IBAction func findPath(_ sender: Any) {
-        if let current = currentLocation {
-            map.mockPlaneForTesting(loc: vector_float3(current))
-            let path = getPathToObject(objectName: "Granny Smith")
-            for point in path {
-                add(position: SCNVector3(point.x, current.y, point.z), color: .blue, size: 0.02)
-            }
+    @IBAction func findPathToExplore(_ sender: Any) {
+        clearPath()
+        let path = getPathToFarPoint()
+        for point in path {
+            add(position: SCNVector3(point.x, 0, point.z))
         }
     }
 
+    @IBAction func clearScene(_ sender: Any) {
+        self.sceneView.scene.rootNode.enumerateChildNodes { (node, stop) in
+            node.removeFromParentNode()
+        }
+    }
+
+    @IBAction func findObject(_ sender: Any) {
+       // clearScene(self)
+        clearPath()
+        let path = getPathToObject(objectName: "Granny Smith")
+        for point in path {
+            add(position: SCNVector3(point.x, 0, point.z))
+        }
+    }
+
+    // MARK: - Path finding
+    /// Get shortest path to the object by its name
     func getPathToObject (objectName: String) -> [vector_float3] {
         if let mapElement = map.getObject(objectName: objectName),
-            let start = currentLocation {
-            let pathBuilder = AStarPathFinder()
-            return pathBuilder.findPath(from: vector_float3(round(start.x / map.gridSize) * map.gridSize,
+            let start = self.currentLocation {
+            let path =  self.pathBuilder.findPath(from: vector_float3(round(start.x / map.gridSize) * map.gridSize,
                                                             map.floorLevel,
                                                             round(start.y / map.gridSize) * map.gridSize),
                                         to: vector_float3(mapElement.x, map.floorLevel, mapElement.z), map: map)
+            map.addPath(path: path)
+            needPathUpdate = true
+            return path
+        }
+        return []
+    }
+
+    /// Get shortest path to the furthest point on the map
+    func getPathToFarPoint () -> [vector_float3] {
+        if let start = self.currentLocation {
+            let end = pathBuilder.getFurthestPoint(start:  vector_float3(start), map: map)
+            let path =  self.pathBuilder.findPath(from: vector_float3(round(start.x / map.gridSize) * map.gridSize,
+                                                                      map.floorLevel,
+                                                                      round(start.y / map.gridSize) * map.gridSize),
+                                                  to: end, map: map)
+            map.addPath(path: path)
+            map.toOld()
+            needPathUpdate = true
+            return path
         }
         return []
     }
@@ -440,6 +439,19 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
 
     func getCurrentPositionOfCamera() -> CGFloat {
         return self.currentPositionOfCamera
+    }
+
+    func isPathUpdateNeeded() -> Bool {
+        if needPathUpdate {
+            needPathUpdate = false
+            return true
+        } else {
+            return false
+        }
+    }
+
+    func getNewPath() -> [vector_float3] {
+        return map.path
     }
 }
 

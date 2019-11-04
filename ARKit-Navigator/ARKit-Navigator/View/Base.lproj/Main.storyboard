@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14111" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -15,14 +11,14 @@
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ARViewController" customModule="ARKit_Navigator" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <arscnView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G4u-Zt-etW">
-                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
                             </arscnView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xXp-8y-UlZ" userLabel="Map">
-                                <rect key="frame" x="251" y="36" width="46" height="46"/>
+                                <rect key="frame" x="476" y="36" width="46" height="46"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="46" id="1ld-TV-6sl"/>
                                     <constraint firstAttribute="height" constant="46" id="h6n-YZ-tM2"/>
@@ -32,17 +28,8 @@
                                     <action selector="showMapPreview:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Y2d-ic-naz"/>
                                 </connections>
                             </button>
-                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wfL-Af-pq3" userLabel="Tracking View">
-                                <rect key="frame" x="16" y="98" width="343" height="64"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="64" id="zS6-gz-dd2"/>
-                                </constraints>
-                                <connections>
-                                    <segue destination="7wV-HK-Elr" kind="embed" id="43f-Al-EYA"/>
-                                </connections>
-                            </containerView>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HH4-cn-en3" userLabel="Map  PreView">
-                                <rect key="frame" x="103" y="395" width="256" height="256"/>
+                                <rect key="frame" x="328" y="328" width="256" height="256"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="256" id="DKZ-lI-kCo"/>
                                     <constraint firstAttribute="width" constant="256" id="US3-JA-R9r"/>
@@ -52,7 +39,7 @@
                                 </connections>
                             </containerView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iHq-Q6-0Qo" userLabel="Show Map Preview Button">
-                                <rect key="frame" x="103" y="395" width="256" height="256"/>
+                                <rect key="frame" x="328" y="328" width="256" height="256"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="256" id="Iss-EB-q4p"/>
                                     <constraint firstAttribute="width" constant="256" id="mQU-zs-WUH"/>
@@ -62,18 +49,40 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fDD-5Z-az8" userLabel="Find Object Button">
-                                <rect key="frame" x="189" y="36" width="46" height="46"/>
+                                <rect key="frame" x="414" y="36" width="46" height="46"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="46" id="bmE-9Y-Sg5"/>
                                     <constraint firstAttribute="height" constant="46" id="phi-wB-wXv"/>
                                 </constraints>
                                 <state key="normal" image="Flag"/>
                                 <connections>
-                                    <action selector="findPath:" destination="BYZ-38-t0r" eventType="touchUpInside" id="PWQ-dT-qeA"/>
+                                    <action selector="findPathToExplore:" destination="BYZ-38-t0r" eventType="touchUpInside" id="PWQ-dT-qeA"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K5O-lm-jPF" userLabel="Find Path Button">
+                                <rect key="frame" x="352" y="36" width="46" height="46"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="46" id="E4E-qV-Gqr"/>
+                                    <constraint firstAttribute="width" constant="46" id="eiA-hU-K2A"/>
+                                </constraints>
+                                <state key="normal" image="Place"/>
+                                <connections>
+                                    <action selector="findObject:" destination="BYZ-38-t0r" eventType="touchUpInside" id="gMH-Xo-dhb"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IXp-M7-G4D" userLabel="Clear Button">
+                                <rect key="frame" x="290" y="36" width="46" height="46"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="46" id="9mu-FY-Tt1"/>
+                                    <constraint firstAttribute="height" constant="46" id="F7L-9C-nHo"/>
+                                </constraints>
+                                <state key="normal" image="Broom"/>
+                                <connections>
+                                    <action selector="clearScene:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jdD-wV-dD0"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="btG-uh-zBD" userLabel="Floor">
-                                <rect key="frame" x="313" y="36" width="46" height="46"/>
+                                <rect key="frame" x="538" y="36" width="46" height="46"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="46" id="tY6-VY-KUG"/>
                                     <constraint firstAttribute="height" constant="46" id="tzB-Xc-rmd"/>
@@ -83,18 +92,32 @@
                                     <action selector="showMap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eIT-8x-0QE"/>
                                 </connections>
                             </button>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wfL-Af-pq3" userLabel="Tracking View">
+                                <rect key="frame" x="16" y="36" width="258" height="64"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="64" id="zS6-gz-dd2"/>
+                                </constraints>
+                                <connections>
+                                    <segue destination="7wV-HK-Elr" kind="embed" id="43f-Al-EYA"/>
+                                </connections>
+                            </containerView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="btG-uh-zBD" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="0uM-G6-ovv"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="btG-uh-zBD" secondAttribute="trailing" constant="16" id="AlW-zk-HY0"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="wfL-Af-pq3" secondAttribute="trailing" constant="16" id="KeV-em-PQS"/>
+                            <constraint firstItem="IXp-M7-G4D" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="IB1-ep-CZy"/>
+                            <constraint firstItem="K5O-lm-jPF" firstAttribute="leading" secondItem="IXp-M7-G4D" secondAttribute="trailing" constant="16" id="JrJ-Tx-8RY"/>
+                            <constraint firstItem="fDD-5Z-az8" firstAttribute="leading" secondItem="K5O-lm-jPF" secondAttribute="trailing" constant="16" id="M10-8Y-asU"/>
+                            <constraint firstItem="IXp-M7-G4D" firstAttribute="leading" secondItem="wfL-Af-pq3" secondAttribute="trailing" constant="16" id="QSU-YQ-PTc"/>
                             <constraint firstItem="G4u-Zt-etW" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="Sm1-TE-9rn"/>
                             <constraint firstItem="G4u-Zt-etW" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Tld-Vl-WX3"/>
                             <constraint firstItem="G4u-Zt-etW" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="W3h-8c-RRw"/>
                             <constraint firstItem="btG-uh-zBD" firstAttribute="leading" secondItem="xXp-8y-UlZ" secondAttribute="trailing" constant="16" id="Z4P-ZW-LrN"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="HH4-cn-en3" secondAttribute="trailing" constant="16" id="ZFj-Td-LfQ"/>
+                            <constraint firstItem="wfL-Af-pq3" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="bAh-fZ-Vjj"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="HH4-cn-en3" secondAttribute="bottom" constant="16" id="crD-t0-t0K"/>
+                            <constraint firstItem="K5O-lm-jPF" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="dMI-HM-XGy"/>
                             <constraint firstItem="fDD-5Z-az8" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="dRo-dX-9xB"/>
                             <constraint firstItem="wfL-Af-pq3" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="eKL-Ck-wPI"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="iHq-Q6-0Qo" secondAttribute="trailing" constant="16" id="hD5-NW-i70"/>
@@ -102,7 +125,6 @@
                             <constraint firstItem="G4u-Zt-etW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="mca-rP-6t1"/>
                             <constraint firstItem="xXp-8y-UlZ" firstAttribute="leading" secondItem="fDD-5Z-az8" secondAttribute="trailing" constant="16" id="nFR-st-Z9f"/>
                             <constraint firstItem="xXp-8y-UlZ" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="pG9-xU-vKs"/>
-                            <constraint firstItem="wfL-Af-pq3" firstAttribute="top" secondItem="xXp-8y-UlZ" secondAttribute="bottom" constant="16" id="rJh-jZ-sNp"/>
                             <constraint firstItem="xXp-8y-UlZ" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="sx0-ph-6jR"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -115,24 +137,24 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="32.799999999999997" y="31.934032983508249"/>
+            <point key="canvasLocation" x="31.199999999999999" y="31.03448275862069"/>
         </scene>
         <!--Map View Controller-->
         <scene sceneID="RYd-hl-obH">
             <objects>
                 <viewController id="RZa-vH-1dh" customClass="MapViewController" customModule="ARKit_Navigator" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="bD4-pd-fO0">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tRb-TH-TIt">
-                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.75" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="lEz-hx-yUh">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="580"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <skView alpha="0.75" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0xl-C4-a1N">
-                                            <rect key="frame" x="-162.5" y="0.0" width="700" height="700"/>
+                                            <rect key="frame" x="-50" y="0.0" width="700" height="700"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="700" id="1Nn-T3-jjS"/>
@@ -185,17 +207,17 @@
             <objects>
                 <viewController id="7wV-HK-Elr" customClass="StatusViewController" customModule="ARKit_Navigator" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="n58-Q5-ijb">
-                        <rect key="frame" x="0.0" y="0.0" width="343" height="64"/>
+                        <rect key="frame" x="0.0" y="0.0" width="33" height="64"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fi8-Kn-Rn8">
-                                <rect key="frame" x="0.0" y="0.0" width="343" height="64"/>
+                                <rect key="frame" x="0.0" y="0.0" width="33" height="64"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.5" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="chO-XU-utb">
-                                    <rect key="frame" x="0.0" y="0.0" width="343" height="64"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="33" height="64"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yNB-3j-vgJ" userLabel="Tracking Status">
-                                            <rect key="frame" x="16" y="8" width="311" height="48"/>
+                                            <rect key="frame" x="16" y="8" width="1" height="48"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
@@ -269,8 +291,10 @@
     </scenes>
     <resources>
         <image name="Back" width="32" height="32"/>
+        <image name="Broom" width="32" height="32"/>
         <image name="Compas" width="32" height="32"/>
         <image name="Flag" width="32" height="32"/>
+        <image name="Place" width="32" height="32"/>
         <image name="Radar" width="32" height="32"/>
     </resources>
 </document>

@@ -83,7 +83,15 @@ class MapPreViewController : UIViewController {
             triangleNode.position = CGPoint(x: 0, y: 20)
             roundNode.addChild(triangleNode)
 
+            // Create  node for path representation
+            let pathLayer = SKShapeNode(circleOfRadius: scene.size.height)
+            pathLayer.name = "pathLayer"
+            pathLayer.fillColor = .clear
+            pathLayer.position = CGPoint(x: 0, y: 0)
+
             backNode.addChild(roundNode)
+            backNode.addChild(pathLayer)
+            pathLayer.zPosition = 14
             roundNode.zPosition = 15
             triangleNode.zPosition = -1
         }
@@ -95,6 +103,11 @@ class MapPreViewController : UIViewController {
         // Set the timer for veiw update
         mapTimer = Timer.scheduledTimer(withTimeInterval: mapRefreshRate, repeats: true, block: {_ in
             self.updateMap()
+            if let pathUpdate = self.delegate?.isPathUpdateNeeded(),
+                pathUpdate,
+                let path = self.delegate?.getNewPath(){
+                self.drawPath(path: path)
+            }
         })
     }
 
@@ -126,5 +139,19 @@ class MapPreViewController : UIViewController {
         }
     }
 
-
+    // Draw new path to the point
+    func drawPath(path: [vector_float3]) {
+        self.scene.childNode(withName: "root")?.childNode(withName: "backNode")?.childNode(withName: "pathLayer")?.removeAllChildren()
+        if let gridSize = delegate?.getGridSize() {
+            let scaledGridSize = CGFloat(gridSize * 100)
+            for element in path {
+                let newNode = SKShapeNode(rectOf: CGSize(width: CGFloat(scaledGridSize), height: CGFloat(scaledGridSize)))
+                newNode.position = CGPoint(x: Double(element.x) * 100 , y: -Double(element.z) * 100)
+                newNode.fillColor = .red
+                newNode.glowWidth = 0
+                newNode.lineWidth = 0
+                self.scene.childNode(withName: "root")?.childNode(withName: "backNode")?.childNode(withName: "pathLayer")?.addChild(newNode)
+            }
+        }
+    }
 }
