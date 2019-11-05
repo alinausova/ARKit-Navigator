@@ -14,6 +14,7 @@ class Map {
     var floorLevel : Float = 100
     let floorLevelMistake : Float = 0.5
     let confidenceThreshold = 15.0
+    let centerConfidence = 2000.0
     let gridSize : Float = 0.05
     var path: [vector_float3] = []
 
@@ -21,10 +22,10 @@ class Map {
 
     init() {
         // create elements for the absolute center
-        let coorCenter = MapElement(x: 0, y: 0, z: 0, content: .center, confidence: 2000)
-        let coorCenterX = MapElement(x: gridSize, y: 0,  z: 0, content: .center, confidence: 2000)
-        let coorCenterZ = MapElement(x: 0, y: 0, z: gridSize, content: .center, confidence: 2000)
-        let coorCenterZ2 = MapElement(x: 0, y: 0, z: gridSize + gridSize, content: .center, confidence: 2000)
+        let coorCenter = MapElement(x: 0, y: 0, z: 0, content: .center, confidence: centerConfidence)
+        let coorCenterX = MapElement(x: gridSize, y: 0,  z: 0, content: .center, confidence: centerConfidence)
+        let coorCenterZ = MapElement(x: 0, y: 0, z: gridSize, content: .center, confidence: centerConfidence)
+        let coorCenterZ2 = MapElement(x: 0, y: 0, z: gridSize + gridSize, content: .center, confidence: centerConfidence)
         addMapElementToGrid(newMapElement: coorCenter)
         addMapElementToGrid(newMapElement: coorCenterX)
         addMapElementToGrid(newMapElement: coorCenterZ)
@@ -38,11 +39,7 @@ class Map {
 
     /// Check if a level belongs to the floor range
     func isFloor(planeLevel: Float) -> Bool {
-        if planeLevel - floorLevel < floorLevelMistake {
-            return true
-        } else {
-            return false
-        }
+        return planeLevel - floorLevel < floorLevelMistake
     }
 
     /// Process new ARPlaneAnchor data
@@ -61,7 +58,7 @@ class Map {
     }
 
     /// Process horisontal plane
-    func addHorisontalPlane(newElement: ARPlaneAnchor) {
+    private func addHorisontalPlane(newElement: ARPlaneAnchor) {
         if isFloor(planeLevel: newElement.transform.columns.3.y) {
         for element in translatePlane(planeAnchor: newElement) {
                 let newMapElement = MapElement (x: round(element.x / gridSize) * gridSize,
@@ -84,7 +81,7 @@ class Map {
     }
 
     /// Process vertical plane
-    func addVerticalPlane(newElement: ARPlaneAnchor) {
+     private func addVerticalPlane(newElement: ARPlaneAnchor) {
         var newWallPoints : [MapElement] = []
         for element in translatePlane(planeAnchor: newElement) {
             let newMapElement = MapElement (x: round(element.x / gridSize) * gridSize,
@@ -109,7 +106,7 @@ class Map {
     }
 
     /// Add a new element to grid
-    func addMapElementToGrid(newMapElement: MapElement) {
+    private func addMapElementToGrid(newMapElement: MapElement) {
         let newKey = createKey(mapElement: newMapElement)
         if let old = mapGrid[newKey]{
             if old.content == newMapElement.content && old.confidence < 999 {
@@ -123,7 +120,7 @@ class Map {
     }
 
     /// Check if a point belongs to the polygon
-    func isPointInPolygon(boundaries: [vector_float3], point: vector_float3) -> Bool {
+    private func isPointInPolygon(boundaries: [vector_float3], point: vector_float3) -> Bool {
         var result = false
         for i in 0...boundaries.count-1 {
             let p1: vector_float3
@@ -141,7 +138,7 @@ class Map {
     }
 
     /// Make rotation matrix for X axis, angle is in radians
-    func makeXRotationMatrix(angle: Float) -> simd_float3x3 {
+    private func makeXRotationMatrix(angle: Float) -> simd_float3x3 {
         let rows = [
             simd_float3( 1,     0,              0),
             simd_float3( 0,     cos(angle),     sin(angle)),
@@ -152,7 +149,7 @@ class Map {
     }
 
     /// Make rotation matrix for Y axis, angle is in radians
-    func makeYRotationMatrix(angle: Float) -> simd_float3x3 {
+    private func makeYRotationMatrix(angle: Float) -> simd_float3x3 {
         let rows = [
             simd_float3( cos(angle),  0,    sin(angle)),
             simd_float3( 0,           1,    0),
@@ -163,7 +160,7 @@ class Map {
     }
 
     /// Rotate and translate all points belong to the plane
-    func translatePlane(planeAnchor: ARPlaneAnchor) -> [simd_float3] {
+    private func translatePlane(planeAnchor: ARPlaneAnchor) -> [simd_float3] {
         var result: [simd_float3] = []
 
         let string = planeAnchor.description
@@ -218,12 +215,12 @@ class Map {
     }
 
     /// Create a key for mapGrid dictionary from a vector
-    func createKey (mapElement: MapElement) -> String {
+     private func createKey (mapElement: MapElement) -> String {
         return "\(mapElement.x):\(mapElement.y):\(mapElement.z)"
     }
 
     /// Get distance between two map elements
-    func getDistance(a: MapElement, b: MapElement) -> Float {
+    private func getDistance(a: MapElement, b: MapElement) -> Float {
         var distance : Float
         distance = sqrt(pow((a.x - b.x),2) + pow((a.y - b.y),2) + pow((a.z - b.z),2))
         return distance
@@ -327,54 +324,5 @@ class Map {
     }
 }
 
-class MapElement {
-    let x : Float
-    let y : Float
-    let z : Float
-    var confidence = 0.0
-    var content = MapContent.notDefined
-    var loadedInMap = false
-    var isNew = true
-    var name: String = ""
-
-    init(x: Float, y: Float, z: Float, content: MapContent, confidence: Double) {
-        self.x = x
-        self.y = y
-        self.z = z
-        self.content = content
-        self.confidence = confidence
-    }
-
-    init(x: Float, y: Float, z: Float, content: MapContent, confidence: Double, name: String) {
-        self.x = x
-        self.y = y
-        self.z = z
-        self.content = content
-        self.confidence = confidence
-        self.name = name
-    }
-
-    func getElementColor() -> UIColor {
-        let color : UIColor
-        switch self.content {
-        case .object: color = UIColor(red:0.47, green:0.88, blue:0.56, alpha:1.0)
-        case .floor: color = UIColor(red:0.96, green:0.73, blue:0.23, alpha:1.0)
-        case .plane: color =  UIColor(red:0.90, green:0.56, blue:0.15, alpha:1.0)
-        case .wall: color = UIColor(red:0.29, green:0.41, blue:0.74, alpha:1.0)
-        case .center: color = UIColor(red:0.90, green:0.31, blue:0.22, alpha:1.0)
-        default: color = .white
-        }
-        return color
-    }
-}
-
-enum MapContent{
-    case floor
-    case plane
-    case wall
-    case object
-    case center
-    case notDefined
-}
-
+var map = Map()
 

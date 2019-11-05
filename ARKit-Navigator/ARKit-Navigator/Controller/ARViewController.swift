@@ -25,14 +25,10 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     }()
     
     let configuration = ARWorldTrackingConfiguration()
-    let confidenceThreshold = 15.0
-    var mapElements : [ARAnchor] = []
     var isFloorInitialized = false
     var currentPositionOfCamera: CGFloat = 0
     var needPathUpdate = false
     let pathBuilder = AStarPathFinder()
-
-    var map = Map()
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -45,7 +41,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
         configuration.planeDetection = [.horizontal, .vertical]
         sceneView.session.delegate = self
         self.sceneView.session.run(configuration)
-
     }
 
     // Prepare for view transition
@@ -63,13 +58,15 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     // Add new planeAnchor to ARView and load it to the map
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
+
         if !isFloorInitialized && planeAnchor.alignment == .horizontal {
             map.setFloor(floorLevel: planeAnchor.transform.columns.3.y)
+            isFloorInitialized = true
         }
 
         let plane = SCNPlane(width: CGFloat(planeAnchor.extent.x), height: CGFloat(planeAnchor.extent.z))
         let planeNode = SCNNode(geometry: plane)
-        planeNode.simdPosition = float3(planeAnchor.center.x, 0, planeAnchor.center.z)
+        planeNode.simdPosition = SIMD3(planeAnchor.center.x, 0, planeAnchor.center.z)
 
         planeNode.eulerAngles.x = -.pi / 2
         planeNode.opacity = 0.1
@@ -85,7 +82,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
             let plane = planeNode.geometry as? SCNPlane
             else { return }
 
-        planeNode.simdPosition = float3(planeAnchor.center.x, 0, planeAnchor.center.z)
+        planeNode.simdPosition = SIMD3(planeAnchor.center.x, 0, planeAnchor.center.z)
 
         plane.width = CGFloat(planeAnchor.extent.x)
         plane.height = CGFloat(planeAnchor.extent.z)
@@ -100,7 +97,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
     }
 
     // Update phone location and position of camera
-    func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
+    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         guard let pointOfView = sceneView.pointOfView else { return }
         self.currentLocation = SCNVector3(pointOfView.transform.m41, pointOfView.transform.m42, pointOfView.transform.m43)
         if let quat = self.sceneView.pointOfView?.presentation.worldOrientation {
@@ -343,9 +340,11 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
 
     /// Refresh AR map elements visualization
     func refresh() {
+        clear()
+        clearPath()
         for element in map.mapGrid.values {
-            if element.confidence > confidenceThreshold {
-                add(x: element.x, y: element.y, z: element.z, color: element.getElementColor(), size: 0.01)
+            if element.confidence > map.confidenceThreshold {
+                add(x: element.x, y: element.y, z: element.z, color: element.color, size: 0.01)
             }
         }
     }
@@ -354,17 +353,15 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MapViewDelegate, Ma
 
     @IBAction func showMapPreview(_ sender: Any) {
         if mapPreviewButton.isHidden {
-            mapPreviewButton.isHidden = false
             mapPreView.alpha = 1
         } else {
-            mapPreviewButton.isHidden = true
             mapPreView.alpha = 0
         }
+        mapPreviewButton.isHidden.toggle()
     }
 
     @IBAction func showMap(_ sender: Any) {
         clear()
-        //map.fillFloor()
         refresh()
     }
     

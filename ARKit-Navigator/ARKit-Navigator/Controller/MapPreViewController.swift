@@ -50,7 +50,7 @@ class MapPreViewController : UIViewController {
             for element in mapElements {
                 let newNode = SKShapeNode(rectOf: CGSize(width: CGFloat(scaledGridSize), height: CGFloat(scaledGridSize)))
                 newNode.position = CGPoint(x: Double(element.x) * 100 , y: -Double(element.z) * 100)
-                newNode.fillColor = element.getElementColor()
+                newNode.fillColor = element.color
                 newNode.glowWidth = 0
                 newNode.lineWidth = 0
                 backNode.addChild(newNode)
@@ -131,7 +131,7 @@ class MapPreViewController : UIViewController {
             for element in mapElements {
                 let newNode = SKShapeNode(rectOf: CGSize(width: CGFloat(scaledGridSize), height: CGFloat(scaledGridSize)))
                 newNode.position = CGPoint(x: Double(element.x) * 100 , y: -Double(element.z) * 100)
-                newNode.fillColor = element.getElementColor()
+                newNode.fillColor = element.color
                 newNode.glowWidth = 0
                 newNode.lineWidth = 0
                 self.scene.childNode(withName: "root")?.childNode(withName: "backNode")?.addChild(newNode)

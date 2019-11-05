@@ -11,6 +11,7 @@
 		0E02867C20A343FB003D166E /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E02867A20A343FB003D166E /* Utilities.swift */; };
 		0E02867D20A343FB003D166E /* StatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E02867B20A343FB003D166E /* StatusViewController.swift */; };
 		0E6F4A7D20B4CA66000CC36C /* AStarPathFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6F4A7C20B4CA66000CC36C /* AStarPathFinder.swift */; };
+		0E7926FD2370E01B00ECFB70 /* MapElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7926FC2370E01B00ECFB70 /* MapElement.swift */; };
 		0EB535542098739600D4D0AE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB535532098739600D4D0AE /* AppDelegate.swift */; };
 		0EB535562098739600D4D0AE /* ARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB535552098739600D4D0AE /* ARViewController.swift */; };
 		0EB535592098739600D4D0AE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0EB535572098739600D4D0AE /* Main.storyboard */; };
@@ -26,6 +27,7 @@
 		0E02867A20A343FB003D166E /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		0E02867B20A343FB003D166E /* StatusViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusViewController.swift; sourceTree = "<group>"; };
 		0E6F4A7C20B4CA66000CC36C /* AStarPathFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AStarPathFinder.swift; sourceTree = "<group>"; };
+		0E7926FC2370E01B00ECFB70 /* MapElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapElement.swift; sourceTree = "<group>"; };
 		0EB535502098739600D4D0AE /* ARKit-Navigator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ARKit-Navigator.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EB535532098739600D4D0AE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0EB535552098739600D4D0AE /* ARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewController.swift; sourceTree = "<group>"; };
@@ -102,6 +104,7 @@
 			isa = PBXGroup;
 			children = (
 				0EB5356520988E6E00D4D0AE /* Map.swift */,
+				0E7926FC2370E01B00ECFB70 /* MapElement.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -200,6 +203,7 @@
 				0E02867D20A343FB003D166E /* StatusViewController.swift in Sources */,
 				0EE6C4E520B064DD00351A6D /* MapPreViewController.swift in Sources */,
 				0EB535562098739600D4D0AE /* ARViewController.swift in Sources */,
+				0E7926FD2370E01B00ECFB70 /* MapElement.swift in Sources */,
 				0E02866B20A089EE003D166E /* Inceptionv3.mlmodel in Sources */,
 				0E02867C20A343FB003D166E /* Utilities.swift in Sources */,
 				0EB5356620988E6E00D4D0AE /* Map.swift in Sources */,
